@@ -16,7 +16,7 @@ export function CartDrawer({ isOpen }: { isOpen: boolean }) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        className="fixed inset-0 z-40 bg-gray-950/40 backdrop-blur-[1px]"
         onClick={closeDrawer}
         aria-hidden="true"
       />

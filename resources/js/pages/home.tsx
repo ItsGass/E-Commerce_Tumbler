@@ -13,9 +13,9 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="max-w-3xl">
-            <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 leading-tight">
               Premium Tumblers for Every Adventure
             </h1>
             <p className="text-lg lg:text-xl text-primary-100 mb-8 max-w-2xl">
@@ -40,13 +40,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 dark:from-gray-950 to-transparent" />
       </section>
 
       {/* Features */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
+      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -95,7 +92,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
+      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -142,7 +139,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white">
+      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Ready to Find Your Perfect Tumbler?

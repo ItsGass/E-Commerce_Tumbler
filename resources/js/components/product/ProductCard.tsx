@@ -29,7 +29,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     (product.default_variant?.color_hex ? [product.default_variant.color_hex] : ['#1a1a1a']);
 
   return (
-    <article className={cn('group relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lg')}>
+    <article className={cn('group relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-card border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lift')}>
       {/* Product Image */}
       <Link
         href={`/products/${product.slug}`}

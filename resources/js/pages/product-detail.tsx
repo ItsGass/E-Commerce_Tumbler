@@ -161,7 +161,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
 
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-2">
                 {mergedProduct.name}
               </h1>
               <p className="text-2xl font-semibold text-primary-600 dark:text-primary-400">
