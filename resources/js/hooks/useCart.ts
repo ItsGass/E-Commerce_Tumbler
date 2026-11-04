@@ -1,0 +1,56 @@
+'use client';
+
+import { useMutation } from '@tanstack/react-query';
+import { api } from '@/lib/axios';
+import { useCartStore } from '@/stores/useCartStore';
+
+export interface CartItem {
+  productId: number;
+  variantId?: number;
+  quantity: number;
+}
+
+export interface ValidatedCartItem {
+  product_id: number;
+  variant_id: number | null;
+  quantity: number;
+  name: string;
+  price: number;
+  image?: string;
+  variant_name?: string;
+}
+
+export interface CartTotals {
+  subtotal: number;
+  shipping: number;
+  total: number;
+}
+
+export interface ValidateCartResponse {
+  items: ValidatedCartItem[];
+  totals: CartTotals;
+}
+
+export function useValidateCart() {
+  return useMutation({
+    mutationFn: async (items: CartItem[]) => {
+      const response = await api.post<ValidateCartResponse>('/cart/validate', { items });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Update local cart with validated data (server prices, etc.)
+      useCartStore.getState().clearCart();
+      data.items.forEach(item => {
+        useCartStore.getState().addItem({
+          productId: item.product_id,
+          variantId: item.variant_id || undefined,
+          quantity: item.quantity,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          variantName: item.variant_name,
+        });
+      });
+    },
+  });
+}
