@@ -66,6 +66,10 @@ export default defineConfig({
             typeAware: true,
         },
     },
+    test: {
+        environment: 'jsdom',
+        include: ['resources/js/**/*.test.tsx'],
+    },
     fmt: {
         printWidth: 80,
         tabWidth: 4,
