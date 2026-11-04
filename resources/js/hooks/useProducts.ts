@@ -87,8 +87,8 @@ export function useProduct(slug: string) {
   return useQuery({
     queryKey: productKeys.detail(slug),
     queryFn: async () => {
-      const response = await api.get<Product>(`/products/${slug}`);
-      return response.data;
+      const response = await api.get<{ data: Product }>(`/products/${slug}`);
+      return response.data.data;
     },
     enabled: !!slug,
   });

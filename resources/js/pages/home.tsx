@@ -2,6 +2,7 @@
 
 import { Link } from '@inertiajs/react';
 import { useProducts } from '@/hooks/useProducts';
+import { addProductToCart } from '@/hooks/useCart';
 import { ProductCard } from '@/components/product';
 import { cn } from '@/lib/utils';
 
@@ -132,7 +133,7 @@ export default function Home() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onAddToCart={(p) => {}}
+                  onAddToCart={addProductToCart}
                 />
               ))}
             </div>

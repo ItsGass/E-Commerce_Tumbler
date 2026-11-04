@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useProducts } from '@/hooks/useProducts';
+import { addProductToCart } from '@/hooks/useCart';
 import { ProductCard } from '@/components/product';
 import { cn } from '@/lib/utils';
 
@@ -77,9 +78,7 @@ export default function Products() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onAddToCart={(p) => {
-                    // The cart store is used directly in ProductCard
-                  }}
+                  onAddToCart={addProductToCart}
                 />
               ))}
             </div>

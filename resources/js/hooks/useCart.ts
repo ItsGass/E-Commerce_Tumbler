@@ -31,6 +31,31 @@ export interface ValidateCartResponse {
   totals: CartTotals;
 }
 
+export interface AddToCartProduct {
+  id: number;
+  name: string;
+  price: number;
+  thumbnail?: { url: string } | null;
+  default_variant?: { id: number; name: string; color_hex: string } | null;
+}
+
+/**
+ * Adds a catalog card product using its default variant and opens the cart,
+ * matching the behavior of the product detail page.
+ */
+export function addProductToCart(product: AddToCartProduct): void {
+  useCartStore.getState().addItem({
+    productId: product.id,
+    variantId: product.default_variant?.id,
+    name: product.name,
+    price: product.price,
+    image: product.thumbnail?.url,
+    variantName: product.default_variant?.name,
+    variantColorHex: product.default_variant?.color_hex,
+  });
+  useCartStore.getState().openDrawer();
+}
+
 export function useValidateCart() {
   return useMutation({
     mutationFn: async (items: CartItem[]) => {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Mesh, LatheGeometry, MeshStandardMaterial, DoubleSide, Color, Group } from 'three';
+import { Mesh, LatheGeometry, MeshStandardMaterial, DoubleSide, Color, Group, Vector2 } from 'three';
 
 interface ProceduralTumblerProps {
   color?: string;
@@ -40,7 +40,7 @@ export function ProceduralTumbler({ color = '#1a1a1a', texture }: ProceduralTumb
   }, []);
 
   const geometry = useMemo(() => {
-    const shape = profilePoints.map(p => new (require('three').Vector2)(p.x, p.y));
+    const shape = profilePoints.map(p => new Vector2(p.x, p.y));
     const geo = new LatheGeometry(shape, 64);
     geo.computeVertexNormals();
     return geo;

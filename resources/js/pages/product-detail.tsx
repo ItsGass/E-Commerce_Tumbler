@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useProduct, useProductViewer } from '@/hooks/useProducts';
 import { useCartStore } from '@/stores/useCartStore';
 import { ProductViewer3D, VariantSelector } from '@/components/product';
@@ -58,9 +58,13 @@ function formatPrice(price: number) {
 
 export default function ProductDetail({ product, initialProduct }: ProductDetailProps) {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const page = usePage();
   const mergedInitialProduct = product || initialProduct;
-  const { data: fetchedProduct, isLoading } = useProduct(mergedInitialProduct?.slug || '');
-  const { data: viewerData } = useProductViewer(mergedInitialProduct?.slug || '');
+  // Route::inertia() sends no props, so fall back to the slug in the URL.
+  const routeSlug = page.url.split('?')[0].split('/').filter(Boolean).pop() || '';
+  const slug = mergedInitialProduct?.slug || routeSlug;
+  const { data: fetchedProduct, isLoading } = useProduct(slug);
+  const { data: viewerData } = useProductViewer(slug);
   const { addItem, openDrawer, getItemCount } = useCartStore();
 
   const mergedProduct = fetchedProduct || mergedInitialProduct;
