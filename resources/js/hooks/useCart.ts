@@ -59,7 +59,15 @@ export function addProductToCart(product: AddToCartProduct): void {
 export function useValidateCart() {
   return useMutation({
     mutationFn: async (items: CartItem[]) => {
-      const response = await api.post<ValidateCartResponse>('/cart/validate', { items });
+      // The API validates snake_case keys (items.*.product_id); the cart store
+      // keeps camelCase for client-side ergonomics.
+      const response = await api.post<ValidateCartResponse>('/cart/validate', {
+        items: items.map((item) => ({
+          product_id: item.productId,
+          variant_id: item.variantId ?? null,
+          quantity: item.quantity,
+        })),
+      });
       return response.data;
     },
     onSuccess: (data) => {
