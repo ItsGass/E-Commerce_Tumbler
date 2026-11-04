@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { api } from '@/lib/axios';
+import { api, ensureCsrfCookie } from '@/lib/axios';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export interface User {
@@ -34,11 +34,17 @@ export interface LoginData {
   password: string;
 }
 
+interface UserResponse {
+  data: User;
+  message?: string;
+}
+
 export function useRegister() {
   return useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await api.post<User>('/auth/register', data);
-      return response.data;
+      await ensureCsrfCookie();
+      const response = await api.post<UserResponse>('/auth/register', data);
+      return response.data.data;
     },
     onSuccess: (user) => {
       useAuthStore.getState().setUser(user);
@@ -49,8 +55,9 @@ export function useRegister() {
 export function useLogin() {
   return useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await api.post<User>('/auth/login', data);
-      return response.data;
+      await ensureCsrfCookie();
+      const response = await api.post<UserResponse>('/auth/login', data);
+      return response.data.data;
     },
     onSuccess: (user) => {
       useAuthStore.getState().setUser(user);
@@ -63,7 +70,7 @@ export function useLogout() {
     mutationFn: async () => {
       await api.post('/auth/logout');
     },
-    onSuccess: () => {
+    onSettled: () => {
       useAuthStore.getState().logout();
     },
   });
@@ -72,8 +79,8 @@ export function useLogout() {
 export function useMe() {
   return useMutation({
     mutationFn: async () => {
-      const response = await api.get<User>('/auth/user');
-      return response.data;
+      const response = await api.get<UserResponse>('/auth/user');
+      return response.data.data;
     },
     onSuccess: (user) => {
       useAuthStore.getState().setUser(user);

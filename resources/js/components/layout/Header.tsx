@@ -1,19 +1,27 @@
 'use client';
 
+import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useCartStore } from '@/stores/useCartStore';
+import { useLogout } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { getItemCount, toggleDrawer } = useCartStore();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const page = usePage();
   const cartCount = getItemCount();
 
   const handleLogout = () => {
-    logout();
-    window.location.href = '/login';
+    setIsMenuOpen(false);
+    logout(undefined, {
+      onSettled: () => {
+        window.location.href = '/login';
+      },
+    });
   };
 
   const isAdmin = user?.abilities?.can_admin || false;
@@ -97,9 +105,11 @@ export function Header() {
               <div className="relative">
                 <button
                   id="user-menu-button"
+                  onClick={() => setIsMenuOpen((open) => !open)}
                   className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  aria-expanded="false"
+                  aria-expanded={isMenuOpen}
                   aria-haspopup="true"
+                  aria-controls="user-menu-dropdown"
                 >
                   <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
                     <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
@@ -114,7 +124,10 @@ export function Header() {
                 {/* Dropdown Menu */}
                 <div 
                   id="user-menu-dropdown"
-                  className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 opacity-0 invisible transform translate-y-2 transition-all duration-200 z-50"
+                  className={cn(
+                    'absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 transform transition-all duration-200 z-50',
+                    isMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
+                  )}
                   role="menu"
                 >
                   <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
@@ -131,6 +144,7 @@ export function Header() {
                   </div>
                   <Link
                     href="/profile"
+                    onClick={() => setIsMenuOpen(false)}
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     role="menuitem"
                   >
@@ -141,6 +155,7 @@ export function Header() {
                   </Link>
                   <Link
                     href="/orders"
+                    onClick={() => setIsMenuOpen(false)}
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     role="menuitem"
                   >
@@ -152,6 +167,7 @@ export function Header() {
                   {(isAdmin || isSuperAdmin) && (
                     <Link
                       href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                       role="menuitem"
                     >
@@ -164,7 +180,8 @@ export function Header() {
                   <hr className="my-1 border-gray-200 dark:border-gray-700" />
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    disabled={isLoggingOut}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
                     role="menuitem"
                   >
                     <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
