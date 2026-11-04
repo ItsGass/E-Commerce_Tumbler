@@ -19,7 +19,7 @@ interface BuyerFormData {
 }
 
 export default function Checkout() {
-  const { items, clearCart, getSubtotal } = useCartStore();
+  const { items, clearCart } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
   const { mutate: validateCart, isPending: isValidating } = useValidateCart();
   const { mutate: guestCheckout, isPending: isGuestCheckout } = useGuestCheckout();
@@ -38,7 +38,7 @@ export default function Checkout() {
   const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart');
   const [orderCode, setOrderCode] = useState<string | null>(null);
 
-  const subtotal = getSubtotal();
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 500000 ? 0 : 15000;
   const total = subtotal + shipping;
 

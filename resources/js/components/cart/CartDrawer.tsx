@@ -4,11 +4,13 @@ import { useCartStore } from '@/stores/useCartStore';
 import { cn, formatPrice } from '@/lib/utils';
 
 export function CartDrawer({ isOpen }: { isOpen: boolean }) {
-  const { items, getSubtotal, closeDrawer, removeItem, updateQuantity, getItemCount } = useCartStore();
-  const subtotal = getSubtotal();
+  const { items, closeDrawer, removeItem, updateQuantity } = useCartStore();
+  // Derive from the subscribed `items` slice: React Compiler memoizes calls to
+  // stable store getters by function identity, which froze these totals.
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 500000 ? 0 : 15000;
   const total = subtotal + shipping;
-  const itemCount = getItemCount();
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   if (!isOpen) return null;
 

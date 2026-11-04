@@ -9,11 +9,11 @@ import { cn } from '@/lib/utils';
 
 export function Header() {
   const { user, isAuthenticated } = useAuthStore();
-  const { getItemCount, toggleDrawer } = useCartStore();
+  const { items, toggleDrawer } = useCartStore();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const page = usePage();
-  const cartCount = getItemCount();
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = () => {
     setIsMenuOpen(false);

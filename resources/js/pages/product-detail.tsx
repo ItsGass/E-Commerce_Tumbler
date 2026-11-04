@@ -65,7 +65,8 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
   const slug = mergedInitialProduct?.slug || routeSlug;
   const { data: fetchedProduct, isLoading } = useProduct(slug);
   const { data: viewerData } = useProductViewer(slug);
-  const { addItem, openDrawer, getItemCount } = useCartStore();
+  const { items, addItem, openDrawer } = useCartStore();
+  const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const mergedProduct = fetchedProduct || mergedInitialProduct;
   const variants = viewerData?.variants || mergedProduct?.variants || [];
@@ -228,7 +229,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
             </div>
 
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              <p>Cart: {getItemCount()} item{getItemCount() !== 1 ? 's' : ''}</p>
+              <p>Cart: {cartItemCount} item{cartItemCount !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>

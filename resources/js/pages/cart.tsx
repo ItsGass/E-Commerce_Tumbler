@@ -11,7 +11,7 @@ import { cn, formatPrice } from '@/lib/utils';
 import { useState } from 'react';
 
 export default function Cart() {
-  const { items, clearCart, getSubtotal, getItemCount, closeDrawer, toggleDrawer } = useCartStore();
+  const { items, clearCart, closeDrawer, toggleDrawer } = useCartStore();
   const { user } = useAuthStore();
   const { mutate: validateCart, isPending: isValidating } = useValidateCart();
   const { mutate: guestCheckout, isPending: isGuestCheckout } = useGuestCheckout();
@@ -28,9 +28,10 @@ export default function Cart() {
     postal_code: '',
   });
 
-  const subtotal = getSubtotal();
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 500000 ? 0 : 15000;
   const total = subtotal + shipping;
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
@@ -104,7 +105,7 @@ export default function Cart() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-            Shopping Cart ({getItemCount()})
+            Shopping Cart ({itemCount})
           </h1>
         </div>
 
