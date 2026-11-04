@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, Suspense } from 'react';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls, Environment, Html, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Environment, Lightformer } from '@react-three/drei';
 import { ProceduralTumbler } from './ProceduralTumbler';
 import * as THREE from 'three';
 
@@ -72,9 +72,54 @@ function GLBModel({ url, onLoad, onError }: { url: string; onLoad?: () => void; 
   return <group ref={groupRef} />;
 }
 
-// Error boundary fallback for GLB
-function GLBFallback({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+/**
+ * Soft contact shadow.
+ *
+ * drei's ContactShadows produced nothing with three 0.187 (verified with
+ * opacity 1, a red colour and a mid-height position), so draw a deterministic
+ * radial gradient instead. The tumbler is symmetric, so a centred ellipse is
+ * the correct ground contact.
+ */
+function SoftShadow() {
+  const texture = useMemo(() => {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return null;
+    }
+    const gradient = ctx.createRadialGradient(
+      size / 2,
+      size / 2,
+      size * 0.04,
+      size / 2,
+      size / 2,
+      size * 0.5,
+    );
+    gradient.addColorStop(0, 'rgba(15, 23, 42, 0.5)');
+    gradient.addColorStop(0.5, 'rgba(15, 23, 42, 0.22)');
+    gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }, []);
+
+  useEffect(() => () => texture?.dispose(), [texture]);
+
+  if (!texture) {
+    return null;
+  }
+
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
+      <planeGeometry args={[1.1, 1.1]} />
+      <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
 }
 
 // Main viewer component with controls
@@ -85,24 +130,50 @@ function ViewerContent({
   onLoad,
   onError,
 }: ViewerInnerProps) {
-  const [currentVariant, setCurrentVariant] = useState(defaultVariantIndex);
+  // Follow the page-level variant selector instead of keeping a private index.
+  const variantIndex = Math.min(
+    Math.max(defaultVariantIndex, 0),
+    Math.max(variantTextures.length - 1, 0),
+  );
   const [useProcedural, setUseProcedural] = useState(!glbUrl);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const { gl } = useThree();
+  const textureRef = useRef<THREE.Texture | null>(null);
 
-  // Load texture for current variant
+  // Load the optional variant texture and dispose the previous one.
   useEffect(() => {
-    const variant = variantTextures[currentVariant];
+    let cancelled = false;
+    const variant = variantTextures[variantIndex];
+
+    textureRef.current?.dispose();
+    textureRef.current = null;
+    setTexture(null);
+
     if (variant?.texture_url) {
-      const loader = new THREE.TextureLoader();
-      loader.load(variant.texture_url, (tex) => {
+      new THREE.TextureLoader().load(variant.texture_url, (tex) => {
+        if (cancelled) {
+          tex.dispose();
+          return;
+        }
         tex.colorSpace = THREE.SRGBColorSpace;
+        textureRef.current = tex;
         setTexture(tex);
       });
-    } else {
-      setTexture(null);
     }
-  }, [currentVariant, variantTextures]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [variantIndex, variantTextures]);
+
+  useEffect(() => () => textureRef.current?.dispose(), []);
+
+  // The procedural model is available as soon as it mounts; without this the
+  // loading skeleton stays on top of the canvas forever.
+  useEffect(() => {
+    if (useProcedural) {
+      onLoad?.();
+    }
+  }, [useProcedural, onLoad]);
 
   // Handle GLB load error
   const handleGLBError = (e: Error) => {
@@ -112,33 +183,79 @@ function ViewerContent({
   };
 
   // Switch to variant's GLB if available
-  const variant = variantTextures[currentVariant];
+  const variant = variantTextures[variantIndex];
   const activeGlbUrl = variant?.glb_url || glbUrl;
 
   return (
     <>
-      <Environment preset="studio" background={false} />
-      <ContactShadows opacity={0.3} scale={1.5} blur={2} far={10} position={[0, -0.5, 0]} />
-      
+      {/* Local studio environment: no remote HDR download, works offline. */}
+      <Environment resolution={256} frames={1}>
+        <Lightformer
+          form="rect"
+          intensity={4}
+          position={[0, 3, 2]}
+          scale={[6, 3, 1]}
+          target={[0, 0.5, 0]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={2}
+          position={[-3, 1.5, 1]}
+          scale={[3, 4, 1]}
+          target={[0, 0.5, 0]}
+        />
+        <Lightformer
+          form="ring"
+          intensity={3}
+          position={[2.5, 2.5, -1]}
+          scale={2}
+          target={[0, 0.5, 0]}
+        />
+        {/* Large front fill so metals reflect a broad light surface instead of
+            reading as black. */}
+        <Lightformer
+          form="rect"
+          intensity={1.2}
+          position={[0, 0.8, 4]}
+          scale={[8, 5, 1]}
+          target={[0, 0.5, 0]}
+        />
+      </Environment>
+
+      <directionalLight position={[3, 4, 2]} intensity={1.4} />
+      <directionalLight position={[-3, 2, -2]} intensity={0.5} color="#bcd7d5" />
+
+      <SoftShadow />
+
       {!useProcedural && activeGlbUrl ? (
-        <Suspense fallback={<ProceduralTumbler color={variant?.color_hex || '#1a1a1a'} texture={texture || undefined} />}>
-          <GLBModel
-            url={activeGlbUrl}
-            onLoad={onLoad}
-            onError={handleGLBError}
-          />
+        <Suspense
+          fallback={
+            <ProceduralTumbler
+              color={variant?.color_hex || '#1a1a1a'}
+              texture={texture}
+              finishName={variant?.name}
+            />
+          }
+        >
+          <GLBModel url={activeGlbUrl} onLoad={onLoad} onError={handleGLBError} />
         </Suspense>
       ) : (
-        <ProceduralTumbler color={variant?.color_hex || '#1a1a1a'} texture={texture || undefined} />
+        <ProceduralTumbler
+          color={variant?.color_hex || '#1a1a1a'}
+          texture={texture}
+          finishName={variant?.name}
+        />
       )}
 
       <OrbitControls
+        makeDefault
         enableDamping
-        dampingFactor={0.05}
-        minZoom={0.5}
-        maxZoom={3}
-        maxPolarAngle={Math.PI / 2 - 0.05}
-        minPolarAngle={0.1}
+        dampingFactor={0.06}
+        target={[0, 0.52, 0]}
+        minDistance={1.6}
+        maxDistance={3.6}
+        minPolarAngle={0.35}
+        maxPolarAngle={1.45}
         enablePan={false}
         autoRotate={false}
         touches={{
@@ -146,36 +263,6 @@ function ViewerContent({
           TWO: THREE.TOUCH.DOLLY_ROTATE,
         }}
       />
-
-      {/* Variant selector overlay */}
-      <Html
-        position={[0, 1.3, 0]}
-        transform={true}
-        style={{ pointerEvents: 'none', zIndex: 10 }}
-      >
-        <div className="flex gap-2" style={{ pointerEvents: 'auto' }}>
-          {variantTextures.map((v, i) => (
-            <button
-              key={v.id}
-              onClick={() => setCurrentVariant(i)}
-              className={`w-8 h-8 rounded-full border-2 transition-all ${
-                i === currentVariant
-                  ? 'border-white scale-110 shadow-lg'
-                  : 'border-transparent opacity-70 hover:opacity-100'
-              }`}
-              style={{
-                backgroundColor: v.texture_url
-                  ? `url(${v.texture_url})`
-                  : v.color_hex,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-              aria-label={v.name}
-              title={v.name}
-            />
-          ))}
-        </div>
-      </Html>
     </>
   );
 }
@@ -189,12 +276,11 @@ export function ViewerInner({
 }: ViewerInnerProps) {
   return (
     <Canvas
-      camera={{ position: [0, 1.2, 2.5], fov: 45 }}
-      onCreated={({ gl }) => {
-        gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        gl.shadowMap.enabled = true;
-        gl.shadowMap.type = THREE.PCFSoftShadowMap;
-      }}
+      // 3/4 view aimed at the middle of the body: sphere-fit distance for a
+      // 1-unit model at fov 33. The previous setup cropped the rim.
+      camera={{ position: [0.9, 1.21, 1.83], fov: 33, near: 0.1, far: 20 }}
+      dpr={[1, 1.75]}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     >
       <ViewerContent
         glbUrl={glbUrl}

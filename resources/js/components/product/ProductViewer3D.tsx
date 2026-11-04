@@ -29,9 +29,19 @@ const ViewerInner = lazy(() =>
 function ViewerSkeleton() {
   return (
     <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="w-12 h-12 border-4 border-primary-600 dark:border-primary-400 border-t-transparent rounded-full animate-spin" />
     </div>
   );
+}
+
+/** WebGL capability check: `Canvas fallback` only fills <canvas> children. */
+function detectWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  } catch {
+    return false;
+  }
 }
 
 function FallbackImage({ 
@@ -73,7 +83,7 @@ export function ProductViewer3D({
   onError,
 }: ProductViewer3DProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [error, setError] = useState<Error | null>(null);
+  const [webglAvailable] = useState(() => typeof window !== 'undefined' && detectWebGL());
 
   const handleLoad = useCallback(() => {
     setStatus('ready');
@@ -82,15 +92,17 @@ export function ProductViewer3D({
 
   const handleError = useCallback((e: Error) => {
     setStatus('error');
-    setError(e);
     onError?.(e);
   }, [onError]);
 
-  // If we have an error, show fallback immediately
-  if (status === 'error') {
+  // If WebGL is unavailable (or the model failed), show the image fallback.
+  if (!webglAvailable || status === 'error') {
     return (
       <div className={cn('relative aspect-square w-full rounded-xl overflow-hidden', className)}>
-        <FallbackImage src={fallbackImage} message="3D model failed to load" />
+        <FallbackImage
+          src={fallbackImage}
+          message={webglAvailable ? '3D model failed to load' : '3D preview unavailable'}
+        />
       </div>
     );
   }
