@@ -7,6 +7,7 @@ import { useUserCheckout, useGuestCheckout } from '@/hooks/useCheckout';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
+import { ProductImage } from '@/components/product';
 import { cn, formatPrice } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -228,24 +229,16 @@ export default function Cart() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="min-w-0 space-y-4 lg:col-span-2">
             {items.map((item, index) => (
               <div 
                 key={`${item.productId}-${item.variantId || 'main'}`}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex gap-4"
+                className="flex min-w-0 gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
               >
                 <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                  )}
+                  <ProductImage src={item.image} alt={item.name} />
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -255,9 +248,9 @@ export default function Cart() {
                   {item.variantName && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                       {item.variantColorHex && (
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.variantColorHex }} />
+                        <span className="w-3 h-3 shrink-0 rounded-full" style={{ backgroundColor: item.variantColorHex }} />
                       )}
-                      {item.variantName}
+                      <span className="truncate">{item.variantName}</span>
                     </p>
                   )}
                   <p className="text-lg font-semibold text-primary-600 dark:text-primary-400 mt-1">
@@ -265,12 +258,12 @@ export default function Cart() {
                   </p>
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
-                  <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg">
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                     <button
                       onClick={() => useCartStore.getState().updateQuantity(item.productId, item.variantId, item.quantity - 1)}
                       disabled={item.quantity <= 1}
-                      className="px-3 py-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
+                      className="px-2.5 py-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -279,7 +272,7 @@ export default function Cart() {
                     <span className="w-8 text-center font-medium">{item.quantity}</span>
                     <button
                       onClick={() => useCartStore.getState().updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                      className="px-3 py-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                      className="px-2.5 py-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -301,7 +294,7 @@ export default function Cart() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="min-w-0 lg:col-span-1">
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-24">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Order Summary

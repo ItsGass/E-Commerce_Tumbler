@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { useCartStore } from '@/stores/useCartStore';
 import { useValidateCart, type CartItem } from '@/hooks/useCart';
 import { useUserCheckout, useGuestCheckout } from '@/hooks/useCheckout';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { ProductImage } from '@/components/product';
 import { cn, formatPrice } from '@/lib/utils';
 
 interface BuyerFormData {
@@ -37,6 +38,8 @@ export default function Checkout() {
   const [errors, setErrors] = useState<Partial<BuyerFormData>>({});
   const [step, setStep] = useState<'cart' | 'checkout' | 'success'>('cart');
   const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [hasAutoValidated, setHasAutoValidated] = useState(false);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 500000 ? 0 : 15000;
@@ -57,8 +60,12 @@ export default function Checkout() {
     }
   }, [user]);
 
-  const handleProceedToCheckout = async () => {
-    if (items.length === 0) return;
+  const handleProceedToCheckout = useCallback(async () => {
+    if (items.length === 0) {
+      return;
+    }
+
+    setValidationError(null);
 
     const cartItems: CartItem[] = items.map(item => ({
       productId: item.productId,
@@ -67,25 +74,37 @@ export default function Checkout() {
     }));
 
     try {
-      const validated = await new Promise<any>((resolve, reject) => {
+      await new Promise<any>((resolve, reject) => {
         validateCart(cartItems, {
           onSuccess: resolve,
           onError: reject,
         });
       });
 
-      if (isAuthenticated && user?.profile_complete) {
-        setStep('checkout');
-      } else if (!isAuthenticated) {
-        setStep('checkout');
-      } else {
-        // User not profile complete - redirect to profile
+      if (isAuthenticated && user && !user.profile_complete) {
+        // Missing shipping details: collect them before taking payment.
         window.location.href = '/profile';
+        return;
       }
-    } catch (error) {
-      console.error('Cart validation failed:', error);
+
+      setStep('checkout');
+    } catch {
+      setValidationError(
+        'Some items in your cart are no longer available. Review the items below or update your cart and try again.'
+      );
     }
-  };
+  }, [items, validateCart, isAuthenticated, user]);
+
+  // `/checkout` is already the destination of "Proceed to Checkout", so
+  // validate on arrival instead of asking for the same click twice. If the
+  // cart cannot be validated we stay on the summary and show why.
+  useEffect(() => {
+    if (hasAutoValidated || items.length === 0) {
+      return;
+    }
+    setHasAutoValidated(true);
+    void handleProceedToCheckout();
+  }, [hasAutoValidated, items.length, handleProceedToCheckout]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,23 +227,36 @@ export default function Checkout() {
             </h1>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-4">
+          {(isValidating || validationError) && (
+            <div className="mb-6" aria-live="polite">
+              {isValidating ? (
+                <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+                  <span
+                    className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent"
+                    aria-hidden="true"
+                  />
+                  Checking item availability…
+                </div>
+              ) : (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300"
+                >
+                  {validationError}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="min-w-0 space-y-4 lg:col-span-2">
               {items.map((item) => (
                 <div 
                   key={`${item.productId}-${item.variantId || 'main'}`}
-                  className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex gap-4"
+                  className="flex min-w-0 gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
                 >
                   <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
+                    <ProductImage src={item.image} alt={item.name} />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -241,7 +273,7 @@ export default function Checkout() {
                     </p>
                   </div>
 
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <p className="font-semibold text-gray-900 dark:text-gray-100">
                       {formatPrice(item.price * item.quantity)}
                     </p>
@@ -250,7 +282,7 @@ export default function Checkout() {
               ))}
             </div>
 
-            <div className="lg:col-span-1">
+            <div className="min-w-0 lg:col-span-1">
               <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-24">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Order Summary
@@ -308,9 +340,9 @@ export default function Checkout() {
           </h1>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Buyer Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
@@ -460,7 +492,7 @@ export default function Checkout() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="min-w-0 lg:col-span-1">
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-24">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Order Summary
@@ -470,15 +502,7 @@ export default function Checkout() {
                 {items.map((item) => (
                   <div key={`${item.productId}-${item.variantId || 'main'}`} className="flex gap-3">
                     <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                      )}
+                      <ProductImage src={item.image} alt={item.name} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">

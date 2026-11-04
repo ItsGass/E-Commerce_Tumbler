@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useProduct, useProductViewer } from '@/hooks/useProducts';
 import { useCartStore } from '@/stores/useCartStore';
-import { ProductViewer3D, VariantSelector } from '@/components/product';
+import { ProductViewer3D, VariantSelector, ProductImage } from '@/components/product';
 import { cn } from '@/lib/utils';
 
 interface ProductDetailProps {
@@ -149,10 +149,9 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                     )}
                     aria-label={`View image ${index + 1}`}
                   >
-                    <img
+                    <ProductImage
                       src={image.url}
                       alt={`${mergedProduct.name} - Image ${index + 1}`}
-                      className="w-full h-full object-cover"
                     />
                   </button>
                 ))}

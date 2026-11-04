@@ -85,21 +85,21 @@ export default function Track() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Email or Phone *
                 </label>
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email address"
-                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full min-w-0 flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
-                  <span className="flex items-center text-gray-400">or</span>
+                  <span className="text-center text-sm text-gray-400 sm:text-base">or</span>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Phone number"
-                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full min-w-0 flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">

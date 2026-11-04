@@ -80,6 +80,25 @@ function GLBModel({ url, onLoad, onError }: { url: string; onLoad?: () => void; 
 const CAMERA_TARGET: [number, number, number] = [0, 0.52, 0];
 
 /**
+ * Tailwind's `dark:` variant follows the OS colour scheme here, so the canvas
+ * has to read the same media query instead of a class on <html>.
+ */
+function usePrefersDark(): boolean {
+  const [isDark, setIsDark] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches,
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => setIsDark(event.matches);
+    query.addEventListener('change', handleChange);
+    return () => query.removeEventListener('change', handleChange);
+  }, []);
+
+  return isDark;
+}
+
+/**
  * Soft contact shadow.
  *
  * drei's ContactShadows produced nothing with three 0.187 (verified with
@@ -88,6 +107,9 @@ const CAMERA_TARGET: [number, number, number] = [0, 0.52, 0];
  * the correct ground contact.
  */
 function SoftShadow() {
+  const prefersDark = usePrefersDark();
+  const invalidate = useThree((state) => state.invalidate);
+
   const texture = useMemo(() => {
     const size = 256;
     const canvas = document.createElement('canvas');
@@ -105,17 +127,27 @@ function SoftShadow() {
       size / 2,
       size * 0.5,
     );
-    gradient.addColorStop(0, 'rgba(15, 23, 42, 0.5)');
-    gradient.addColorStop(0.5, 'rgba(15, 23, 42, 0.22)');
-    gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    // A dark slate shadow is invisible on the dark surface, so dark mode gets a
+    // cool teal bounce instead: it reads as light spilling under the tumbler.
+    const stops = prefersDark
+      ? ['rgba(127, 196, 191, 0.4)', 'rgba(75, 167, 161, 0.15)', 'rgba(75, 167, 161, 0)']
+      : ['rgba(15, 23, 42, 0.5)', 'rgba(15, 23, 42, 0.22)', 'rgba(15, 23, 42, 0)'];
+    gradient.addColorStop(0, stops[0]);
+    gradient.addColorStop(0.5, stops[1]);
+    gradient.addColorStop(1, stops[2]);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, size, size);
     const tex = new THREE.CanvasTexture(canvas);
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
-  }, []);
+  }, [prefersDark]);
 
   useEffect(() => () => texture?.dispose(), [texture]);
+
+  // frameloop="demand" would keep the old shadow after an OS theme switch.
+  useEffect(() => {
+    invalidate();
+  }, [texture, invalidate]);
 
   if (!texture) {
     return null;
@@ -332,6 +364,7 @@ export function ViewerInner({
 }: ViewerInnerProps) {
   return (
     <Canvas
+      className="viewer-canvas"
       // 3/4 view aimed at the middle of the body: sphere-fit distance for a
       // 1-unit model at fov 33. The previous setup cropped the rim.
       camera={{ position: [0.9, 1.21, 1.83], fov: 33, near: 0.1, far: 20 }}

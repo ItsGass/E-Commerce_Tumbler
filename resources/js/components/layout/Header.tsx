@@ -12,11 +12,15 @@ export function Header() {
   const { items, toggleDrawer } = useCartStore();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const page = usePage();
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  const closeNav = () => setIsNavOpen(false);
+
   const handleLogout = () => {
     setIsMenuOpen(false);
+    setIsNavOpen(false);
     logout(undefined, {
       onSettled: () => {
         window.location.href = '/login';
@@ -84,6 +88,28 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
+            {/* Mobile menu toggle: the desktop nav is hidden below lg, and
+                without this the only routes were Products (via the logo) and
+                whatever the user menu happened to expose. */}
+            <button
+              type="button"
+              onClick={() => setIsNavOpen((open) => !open)}
+              className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors lg:hidden"
+              aria-label={isNavOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isNavOpen}
+              aria-controls="mobile-menu"
+            >
+              {isNavOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+              )}
+            </button>
+
             {/* Cart Button */}
             <button
               onClick={toggleDrawer}
@@ -202,6 +228,96 @@ export function Header() {
                 <Link
                   href="/register"
                   className="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile navigation. Rendered but hidden so aria-controls always
+            resolves to a real element. */}
+        <div
+          id="mobile-menu"
+          className={cn(
+            'border-t border-gray-200 dark:border-gray-800 lg:hidden',
+            isNavOpen ? 'block' : 'hidden'
+          )}
+        >
+          <div className="space-y-1 py-3">
+            <Link
+              href="/products"
+              onClick={closeNav}
+              className={cn(
+                'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
+                page.url.startsWith('/products')
+                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+              )}
+            >
+              Products
+            </Link>
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                onClick={closeNav}
+                className={cn(
+                  'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
+                  page.url.startsWith('/orders')
+                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                )}
+              >
+                My Orders
+              </Link>
+            )}
+            {(isAdmin || isSuperAdmin) && (
+              <Link
+                href="/admin"
+                onClick={closeNav}
+                className={cn(
+                  'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
+                  page.url.startsWith('/admin')
+                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                )}
+              >
+                Admin
+              </Link>
+            )}
+
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={closeNav}
+                  className="block rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                  Profile
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="block w-full rounded-lg px-3 py-3 text-left text-base font-medium text-red-600 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:text-red-400 dark:hover:bg-gray-800"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <Link
+                  href="/login"
+                  onClick={closeNav}
+                  className="rounded-lg border border-gray-300 px-3 py-3 text-center text-base font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={closeNav}
+                  className="rounded-lg bg-primary-600 px-3 py-3 text-center text-base font-medium text-white transition-colors hover:bg-primary-700"
                 >
                   Get Started
                 </Link>

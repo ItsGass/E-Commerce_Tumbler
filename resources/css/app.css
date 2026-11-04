@@ -42,3 +42,17 @@
         outline-color: var(--color-primary-500);
     }
 }
+
+@layer components {
+    /*
+     * R3F writes `touch-action: none` onto the Canvas container and
+     * OrbitControls writes it onto the <canvas> itself, which turned the viewer
+     * into a dead zone for vertical swipes on mobile. Keep vertical panning with
+     * the page; horizontal drags still rotate and, because pan-y omits
+     * pinch-zoom, two-finger gestures still reach the controls for dolly.
+     */
+    .viewer-canvas,
+    .viewer-canvas canvas {
+        touch-action: pan-y !important;
+    }
+}
