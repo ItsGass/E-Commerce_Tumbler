@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import { Canvas, useLoader } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState, Suspense, type ComponentRef } from 'react';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls, Environment, Lightformer } from '@react-three/drei';
 import { ProceduralTumbler } from './ProceduralTumbler';
@@ -19,6 +19,10 @@ interface ViewerInnerProps {
   glbUrl: string | null;
   variantTextures: VariantTexture[];
   defaultVariantIndex?: number;
+  autoRotate?: boolean;
+  /** Increment to snap the camera back to its default framing. */
+  resetToken?: number;
+  onInteract?: () => void;
   onLoad?: () => void;
   onError?: (error: Error) => void;
 }
@@ -71,6 +75,9 @@ function GLBModel({ url, onLoad, onError }: { url: string; onLoad?: () => void; 
 
   return <group ref={groupRef} />;
 }
+
+// Camera framing shared by the controls and the reset state.
+const CAMERA_TARGET: [number, number, number] = [0, 0.52, 0];
 
 /**
  * Soft contact shadow.
@@ -127,6 +134,9 @@ function ViewerContent({
   glbUrl,
   variantTextures,
   defaultVariantIndex = 0,
+  autoRotate = false,
+  resetToken = 0,
+  onInteract,
   onLoad,
   onError,
 }: ViewerInnerProps) {
@@ -138,6 +148,46 @@ function ViewerContent({
   const [useProcedural, setUseProcedural] = useState(!glbUrl);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const textureRef = useRef<THREE.Texture | null>(null);
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
+  const invalidate = useThree((state) => state.invalidate);
+
+  // OrbitControls is built before the `target` prop is applied, so its saved
+  // `target0` would be the origin and "Reset view" would aim at the base.
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls) {
+      return;
+    }
+    controls.target.set(...CAMERA_TARGET);
+    controls.update();
+    controls.saveState();
+  }, []);
+
+  // Restore the default framing. `reset()` dispatches a change event, which
+  // three's controls forward to R3F's invalidate, so this also repaints under
+  // frameloop="demand".
+  useEffect(() => {
+    if (resetToken > 0) {
+      controlsRef.current?.reset();
+    }
+  }, [resetToken]);
+
+  // frameloop="demand" only renders when something invalidates, and
+  // OrbitControls.start() on auto-rotation only reports a change once a frame
+  // has run. Drive the loop from rAF while auto-rotation is enabled; it is the
+  // only state where the scene is not static.
+  useEffect(() => {
+    if (!autoRotate) {
+      return;
+    }
+    let frame = 0;
+    const tick = () => {
+      invalidate();
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [autoRotate, invalidate]);
 
   // Load the optional variant texture and dispose the previous one.
   useEffect(() => {
@@ -248,16 +298,19 @@ function ViewerContent({
       )}
 
       <OrbitControls
+        ref={controlsRef}
         makeDefault
         enableDamping
         dampingFactor={0.06}
-        target={[0, 0.52, 0]}
+        target={CAMERA_TARGET}
         minDistance={1.6}
         maxDistance={3.6}
         minPolarAngle={0.35}
         maxPolarAngle={1.45}
         enablePan={false}
-        autoRotate={false}
+        autoRotate={autoRotate}
+        autoRotateSpeed={1.6}
+        onStart={onInteract}
         touches={{
           ONE: THREE.TOUCH.ROTATE,
           TWO: THREE.TOUCH.DOLLY_ROTATE,
@@ -271,6 +324,9 @@ export function ViewerInner({
   glbUrl,
   variantTextures,
   defaultVariantIndex = 0,
+  autoRotate = false,
+  resetToken = 0,
+  onInteract,
   onLoad,
   onError,
 }: ViewerInnerProps) {
@@ -280,12 +336,18 @@ export function ViewerInner({
       // 1-unit model at fov 33. The previous setup cropped the rim.
       camera={{ position: [0.9, 1.21, 1.83], fov: 33, near: 0.1, far: 20 }}
       dpr={[1, 1.75]}
+      // The scene is static between gestures: repaint only when OrbitControls
+      // reports movement instead of rendering at 60fps forever.
+      frameloop="demand"
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     >
       <ViewerContent
         glbUrl={glbUrl}
         variantTextures={variantTextures}
         defaultVariantIndex={defaultVariantIndex}
+        autoRotate={autoRotate}
+        resetToken={resetToken}
+        onInteract={onInteract}
         onLoad={onLoad}
         onError={onError}
       />

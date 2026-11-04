@@ -84,11 +84,18 @@ export function ProductViewer3D({
 }: ProductViewer3DProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [webglAvailable] = useState(() => typeof window !== 'undefined' && detectWebGL());
+  const [autoRotate, setAutoRotate] = useState(false);
+  const [resetToken, setResetToken] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const handleLoad = useCallback(() => {
     setStatus('ready');
     onLoad?.();
   }, [onLoad]);
+
+  const handleInteract = useCallback(() => {
+    setHasInteracted(true);
+  }, []);
 
   const handleError = useCallback((e: Error) => {
     setStatus('error');
@@ -114,12 +121,80 @@ export function ProductViewer3D({
           glbUrl={glbUrl}
           variantTextures={variantTextures}
           defaultVariantIndex={defaultVariantIndex}
+          autoRotate={autoRotate}
+          resetToken={resetToken}
+          onInteract={handleInteract}
           onLoad={handleLoad}
           onError={handleError}
         />
       </Suspense>
-      
+
       {status === 'loading' && <ViewerSkeleton />}
+
+      {/*
+        Viewer dock. The canvas has no visible chrome of its own, so nothing
+        told visitors the model could be dragged. The hint fades on first
+        interaction and the two controls stay available afterwards.
+      */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-2 p-3">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-900/5 backdrop-blur transition-opacity duration-300 dark:bg-gray-900/80 dark:text-gray-300 dark:ring-white/10',
+            hasInteracted ? 'opacity-0' : 'opacity-100'
+          )}
+          aria-hidden={hasInteracted}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 7.5A8.25 8.25 0 0112 3.75c2.9 0 5.44 1.5 6.9 3.77m0 0V3.75m0 3.77h-3.77M19.5 16.5A8.25 8.25 0 0112 20.25a8.25 8.25 0 01-6.9-3.77m0 0v3.77m0-3.77h3.77" />
+          </svg>
+          Drag to rotate
+        </span>
+
+        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/90 p-1 shadow-sm ring-1 ring-gray-900/5 backdrop-blur dark:bg-gray-900/90 dark:ring-white/10">
+          <button
+            type="button"
+            onClick={() => setAutoRotate((value) => !value)}
+            aria-pressed={autoRotate}
+            aria-label={autoRotate ? 'Stop auto-rotation' : 'Start auto-rotation'}
+            title={autoRotate ? 'Stop auto-rotation' : 'Start auto-rotation'}
+            className={cn(
+              'inline-flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full transition-colors',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900',
+              autoRotate
+                ? 'bg-primary-600 text-white hover:bg-primary-700'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+            )}
+          >
+            {autoRotate ? (
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="7" y="6" width="3.5" height="12" rx="1" />
+                <rect x="13.5" y="6" width="3.5" height="12" rx="1" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5.5v13a1 1 0 001.53.85l10-6.5a1 1 0 000-1.7l-10-6.5A1 1 0 008 5.5z" />
+              </svg>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setResetToken((value) => value + 1)}
+            aria-label="Reset view"
+            title="Reset view"
+            className={cn(
+              'inline-flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full text-gray-600 transition-colors',
+              'hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900'
+            )}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v3.75l2.5 1.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

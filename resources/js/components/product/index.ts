@@ -1,5 +1,7 @@
 export { ProductViewer3D } from './ProductViewer3D';
 export { ProductCard } from './ProductCard';
 export { VariantSelector } from './VariantSelector';
-export { ProceduralTumbler } from './ProceduralTumbler';
 export type { VariantTexture } from './ProductViewer3D';
+// ProceduralTumbler is intentionally not re-exported: it imports three, and the
+// catalog/home pages import this barrel for ProductCard only. Re-exporting it
+// pulled the whole 3D renderer into the catalog bundle.
