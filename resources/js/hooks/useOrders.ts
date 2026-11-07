@@ -86,8 +86,11 @@ export function useTrackOrder(code: string, email?: string, phone?: string) {
       if (email) params.append('email', email);
       if (phone) params.append('phone', phone);
       
-      const response = await api.get<Order>(`/orders/${code}/track`, { params });
-      return response.data;
+      const response = await api.get<{ data: Order }>(`/orders/${code}/track`, { params });
+      // The endpoint answers with a resource wrapper, so the order itself sits
+      // under `data`. Returning the wrapper made the page read `order.buyer`
+      // from an object that has none, and the track screen crashed.
+      return response.data.data;
     },
     enabled: !!code && (!!email || !!phone),
     staleTime: 10_000,

@@ -147,7 +147,9 @@ export default function Checkout() {
     }
   };
 
-  if (items.length === 0) {
+  // A placed order empties the cart, so the empty-cart screen must not
+  // shadow the confirmation that follows it.
+  if (items.length === 0 && step !== 'success') {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">

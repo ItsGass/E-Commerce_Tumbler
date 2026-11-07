@@ -98,6 +98,10 @@ Seeded accounts (`password123`):
 | V-06 | Below `lg` the header exposed no route to orders/admin/profile or sign in/out. | Mobile hamburger with `aria-controls`/`aria-expanded`. |
 | V-07 | Horizontal overflow at 390px on the catalog/cart/checkout/track grids. | Explicit `grid-cols-1` and `min-w-0` on the columns. |
 | V-22 | `/checkout` asked the user to press "Proceed to Checkout" again after arriving from that button. | Validate on mount with a spinner and keep the user on the summary on failure. |
+| CHECKOUT-CONFIRM | A placed order emptied the cart, and the empty-cart screen shadowed the confirmation, so `/checkout` and `/cart` showed "Your cart is empty" instead of "Order Confirmed!" and the buyer never saw the order code. | The success step now wins over the empty-cart guard; `/cart` renders the same confirmation panel and keeps the code. |
+| TRACK-CRASH | `/track` crashed with `Cannot read properties of undefined (reading 'name')`: `GET /api/orders/{code}/track` answers with a resource wrapper (`{"data": {...}}`) but the hook handed the wrapper to the page, which read `order.buyer` from an object that has none. | The hook unwraps `data`; a regression test drives the screen with a wrapped payload. |
+| TRACK-PREFILL | `/track/{code}` ignored the code in the path, so the "Track Order" link on the confirmation screen landed on an empty form. | The page prefills the code from the current path. |
+| TEST-IN-PAGES | A test file under `resources/js/pages/` is picked up by the Inertia Vite plugin's `./pages/**/*` page glob, which pulled `vitest` into the app bundle and broke the built app at start-up. | Frontend page tests live outside `resources/js/pages/` (`resources/js/app.track.test.tsx`); the build stays free of test code. |
 
 ### Deferred
 
@@ -114,6 +118,14 @@ own commit: `F-TEST-1` (`da82c76`), `F-TEST-2` (`e82d5e5`), `F-MARKPAID`
 (`63e54a2`), `F-ROLE` (`9de6acd`), `F-ROLE-REQ` (`e852285`) and `F-TRACK`
 (`d18fdc5`). `ADMIN-META` was found while verifying the admin screens
 (`09cd30e`).
+
+### New in Batch 6
+
+The stabilization branch added the super-admin self-guard follow-up
+(`37ad45d`), the verified stock-concurrency notes (`6da03ed`) and the opt-in
+demo product images (`67a5843`). The final browser pass over all four roles
+then found and fixed `CHECKOUT-CONFIRM`, `TRACK-CRASH`, `TRACK-PREFILL` and
+`TEST-IN-PAGES` in one commit.
 
 ## Known limitations
 

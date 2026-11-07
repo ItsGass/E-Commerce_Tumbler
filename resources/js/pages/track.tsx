@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import { useTrackOrder } from '@/hooks/useOrders';
 import { cn, formatPrice } from '@/lib/utils';
 
@@ -24,11 +24,31 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function Track() {
-  const [code, setCode] = useState('');
+  const { url } = usePage();
+
+  // `/track/{code}` carries the code in the path; prefill it so the buyer only
+  // has to confirm who they are.
+  const codeFromUrl = useMemo(() => {
+    const path = url.split('?')[0].split('/').filter(Boolean);
+
+    if (path.length !== 2 || path[0] !== 'track') {
+      return '';
+    }
+
+    return path[1].toUpperCase();
+  }, [url]);
+
+  const [code, setCode] = useState(codeFromUrl);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (codeFromUrl) {
+      setCode(codeFromUrl);
+    }
+  }, [codeFromUrl]);
 
   const { data: order, isLoading, isError } = useTrackOrder(
     submitted ? code : '',

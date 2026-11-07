@@ -19,6 +19,7 @@ export default function Cart() {
   const { mutate: userCheckout, isPending: isUserCheckout } = useUserCheckout();
 
   const [showCheckout, setShowCheckout] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [buyerData, setBuyerData] = useState({
     name: '',
     email: '',
@@ -54,7 +55,9 @@ export default function Cart() {
 
       if (user) {
         // User checkout
-        userCheckout(validated.items);
+        userCheckout(validated.items, {
+          onSuccess: (data) => setOrderCode(data.data.code),
+        });
       } else {
         // Guest checkout - show form
         setShowCheckout(true);
@@ -71,8 +74,56 @@ export default function Cart() {
       variantId: item.variantId,
       quantity: item.quantity,
     }));
-    guestCheckout({ items: cartItems, buyer: buyerData });
+    guestCheckout({ items: cartItems, buyer: buyerData }, {
+      onSuccess: (data) => setOrderCode(data.data.code),
+    });
   };
+
+  // A placed order empties the cart, so the empty-cart screen must not
+  // shadow the confirmation that follows it.
+  if (orderCode) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
+            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+              Order Confirmed!
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Thank you for your purchase. Your order has been placed successfully.
+            </p>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6 text-left">
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                Order Code: <span className="text-primary-600 dark:text-primary-400 font-mono">{orderCode}</span>
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Save this code to track your order.
+              </p>
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Link
+                href={`/track/${orderCode}`}
+                className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
+              >
+                Track Order
+              </Link>
+              <Link
+                href="/products"
+                className="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
