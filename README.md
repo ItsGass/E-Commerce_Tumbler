@@ -162,6 +162,29 @@ Until a real image is uploaded, product tiles, cart rows, checkout rows, and the
 detail gallery show a designed tumbler silhouette instead of a broken-image
 icon. Uploaded images require the `storage:link` step above.
 
+### Demo product images (opt-in)
+
+For a demo catalogue that is not full of silhouette tiles, the seeder can
+generate one small solid-colour PNG per product with GD. The generated files
+are written to the public disk under `products/images/` and the product's
+thumbnail row is pointed at them.
+
+This is **opt-in**. A plain `php artisan db:seed` does not generate images and
+does not need the `gd` extension:
+
+```bash
+# generate the demo images together with the rest of the seed
+SEED_DEMO_IMAGES=true php artisan db:seed
+
+# or generate only the demo images
+php artisan db:seed --class=DemoImageSeeder
+```
+
+`SEED_DEMO_IMAGES` is listed in `.env.example` and defaults to `false`. The
+seeder is idempotent: re-running it reuses the existing files and rows instead
+of duplicating them. The generated PNGs live in `storage/app/public`, which is
+git-ignored, so no binaries are committed.
+
 ## Stock concurrency
 
 Checkout locks the product rows before it looks at the stock:

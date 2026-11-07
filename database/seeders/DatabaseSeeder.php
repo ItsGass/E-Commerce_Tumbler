@@ -8,9 +8,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([
+        $seeders = [
             RoleSeeder::class,
             ProductSeeder::class,
-        ]);
+        ];
+
+        if (config('seed.demo_images')) {
+            $seeders[] = DemoImageSeeder::class;
+        }
+
+        $this->call($seeders);
     }
 }
