@@ -27,7 +27,11 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::inertia('/admin/users', 'admin/users')->name('admin.users.index');
 });
 
-// Fallback for SPA routing (optional, for direct URL access)
+// Fallback for SPA routing (optional, for direct URL access).
+//
+// `/api/*` is deliberately excluded: API paths must answer with JSON (or a
+// JSON 404 from routes/api.php), never with the SPA shell. The requirement is
+// matched after the leading slash, so it must not contain `^` or `$` anchors.
 Route::get('/{any}', function () {
     return Inertia::render('home');
-})->where('any', '.*');
+})->where('any', '(?!(?:api)(?:/|$)).*');

@@ -28,7 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // API paths always answer with JSON, including `/api` itself.
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) => $request->is('api') || $request->is('api/*') || $request->expectsJson(),
         );
     })->create();

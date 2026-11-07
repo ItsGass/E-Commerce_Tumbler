@@ -69,3 +69,8 @@ Route::middleware(['auth:sanctum', 'role:super_admin'])->prefix('super-admin')->
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::patch('/users/{user}/role', [UserController::class, 'changeRole']);
 });
+
+// Unknown API paths must answer with JSON. `Route::any` (instead of
+// `Route::fallback`) also covers `/api` itself and every HTTP method.
+Route::any('/{any?}', fn () => response()->json(['message' => 'Not found'], 404))
+    ->where('any', '.*');
