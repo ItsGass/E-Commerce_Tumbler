@@ -9,17 +9,11 @@ class ProductCollection extends ResourceCollection
 {
     public function toArray(Request $request): array
     {
+        // The paginator already adds `links` and `meta`; returning our own
+        // `meta` made array_merge_recursive turn every shared key into an
+        // array (current_page: [1, 1], path: [url, url]).
         return [
-            'data' => $this->collection,
-            'meta' => [
-                'current_page' => $this->currentPage(),
-                'from' => $this->firstItem(),
-                'last_page' => $this->lastPage(),
-                'path' => $this->path(),
-                'per_page' => $this->perPage(),
-                'to' => $this->lastItem(),
-                'total' => $this->total(),
-            ],
+            'data' => parent::toArray($request),
         ];
     }
 }

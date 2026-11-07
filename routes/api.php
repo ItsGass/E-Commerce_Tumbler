@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
 use App\Http\Controllers\Api\AuthController;
@@ -43,10 +44,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'role:admin,super_admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index']);
     Route::get('/products', [AdminProductController::class, 'index']);
     Route::post('/products', [AdminProductController::class, 'store']);
     Route::get('/products/{product}', [AdminProductController::class, 'show']);
-    Route::put('/products/{product}', [AdminProductController::class, 'update']);
+    Route::match(['put', 'patch'], '/products/{product}', [AdminProductController::class, 'update']);
     Route::delete('/products/{product}', [AdminProductController::class, 'destroy']);
     Route::post('/products/{product}/glb', [AdminProductController::class, 'uploadGlb']);
     Route::post('/products/{product}/variants', [AdminProductController::class, 'storeVariant']);

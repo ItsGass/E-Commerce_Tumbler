@@ -41,6 +41,7 @@ function AdminProductsContent() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['admin', 'products', { page, search }],
@@ -73,6 +74,35 @@ function AdminProductsContent() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
     },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: Record<string, unknown> }) => {
+      const response = await api.patch(`/admin/products/${id}`, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      setEditingProduct(null);
+    },
+  });
+
+  const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    const formData = new FormData(e.currentTarget);
+    updateMutation.mutate({
+      id: editingProduct.id,
+      payload: {
+        name: formData.get('name'),
+        slug: formData.get('slug'),
+        description: formData.get('description') || null,
+        price: Number(formData.get('price')),
+        stock: Number(formData.get('stock')),
+        is_active: formData.get('is_active') === 'on',
+      },
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -222,12 +252,12 @@ function AdminProductsContent() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right pr-6">
                           <div className="flex items-center justify-end gap-2">
-                            <Link
-                              href={`/admin/products/${product.id}/edit`}
+                            <button
+                              onClick={() => setEditingProduct(product)}
                               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
                             >
                               Edit
-                            </Link>
+                            </button>
                             <button
                               onClick={() => confirmDelete(product.id, product.name)}
                               disabled={deleteMutation.isPending}
@@ -390,6 +420,125 @@ function AdminProductsContent() {
                     className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50"
                   >
                     {createMutation.isPending ? 'Creating...' : 'Create Product'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Product Modal */}
+        {editingProduct && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <form onSubmit={handleEditSubmit} className="p-6 space-y-6" id="edit-product-form">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Edit Product
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Name *
+                    </label>
+                    <input
+                      name="name"
+                      type="text"
+                      required
+                      defaultValue={editingProduct.name}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Slug *
+                    </label>
+                    <input
+                      name="slug"
+                      type="text"
+                      required
+                      defaultValue={editingProduct.slug}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    rows={3}
+                    defaultValue={editingProduct.description ?? ''}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Price (IDR) *
+                    </label>
+                    <input
+                      name="price"
+                      type="number"
+                      required
+                      min="0"
+                      defaultValue={editingProduct.price}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Stock *
+                    </label>
+                    <input
+                      name="stock"
+                      type="number"
+                      required
+                      min="0"
+                      defaultValue={editingProduct.stock}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <input
+                    name="is_active"
+                    type="checkbox"
+                    defaultChecked={editingProduct.is_active}
+                    className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  Active
+                </label>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updateMutation.isPending}
+                    className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50"
+                  >
+                    {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </form>

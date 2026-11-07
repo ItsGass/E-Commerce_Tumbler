@@ -13,9 +13,15 @@ interface Order {
   subtotal: number;
   shipping_cost: number;
   total: number;
-  buyer_name: string;
-  buyer_email: string;
-  buyer_phone: string;
+  buyer: {
+    name: string;
+    email: string;
+    phone: string;
+    street: string;
+    city: string;
+    province: string;
+    postal_code: string;
+  };
   user_id?: number | null;
   created_at: string;
   items: Array<{
@@ -203,10 +209,10 @@ function AdminOrdersContent() {
                         <td className="px-6 py-4">
                           <div>
                             <p className="font-medium text-gray-900 dark:text-gray-100">
-                              {order.buyer_name}
+                              {order.buyer.name}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {order.buyer_email}
+                              {order.buyer.email}
                             </p>
                           </div>
                         </td>
@@ -349,12 +355,12 @@ function AdminOrdersContent() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Customer</p>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer_name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedOrder.buyer_email}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedOrder.buyer.email}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer_phone}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer.phone}</p>
                   </div>
                 </div>
 

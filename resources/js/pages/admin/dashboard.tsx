@@ -131,7 +131,7 @@ function AdminDashboardContent() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {data?.recent_orders.slice(0, 5).map((order) => (
+              {data?.recent_orders?.slice(0, 5).map((order) => (
                 <div key={order.id} className="p-6 flex items-center justify-between">
                   <div>
                     <p className="font-mono font-medium text-gray-900 dark:text-gray-100">
@@ -159,7 +159,7 @@ function AdminDashboardContent() {
                   </div>
                 </div>
               ))}
-              {!data?.recent_orders.length && (
+              {!data?.recent_orders?.length && (
                 <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   No recent orders
                 </div>
@@ -178,7 +178,7 @@ function AdminDashboardContent() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {data?.low_stock_products.slice(0, 5).map((product) => (
+              {data?.low_stock_products?.slice(0, 5).map((product) => (
                 <div key={product.id} className="p-6 flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
@@ -202,7 +202,7 @@ function AdminDashboardContent() {
                   </div>
                 </div>
               ))}
-              {!data?.low_stock_products.length && (
+              {!data?.low_stock_products?.length && (
                 <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   All products well stocked ✓
                 </div>
