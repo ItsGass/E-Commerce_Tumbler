@@ -231,7 +231,14 @@ function AdminUsersContent() {
                       <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
+                              {isSelf && (
+                                <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                  You
+                                </span>
+                              )}
+                            </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                           </div>
                         </td>
@@ -241,6 +248,7 @@ function AdminUsersContent() {
                             onChange={(e) => handleRoleChange(user, e.target.value)}
                             disabled={changeRoleMutation.isPending || isSelf}
                             title={isSelf ? 'You cannot change your own role' : undefined}
+                            aria-label={isSelf ? `Role for ${user.name} (you cannot change your own role)` : `Role for ${user.name}`}
                             className={cn(
                               'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60',
                               ROLE_COLORS[user.role]
@@ -279,6 +287,7 @@ function AdminUsersContent() {
                               onClick={() => confirmDelete(user)}
                               disabled={deleteMutation.isPending || isSelf}
                               title={isSelf ? 'You cannot delete your own account' : undefined}
+                              aria-label={isSelf ? `Delete ${user.name} (you cannot delete your own account)` : `Delete ${user.name}`}
                               className="text-red-600 dark:text-red-400 hover:text-red-700 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
                             >
                               Delete
