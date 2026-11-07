@@ -55,6 +55,7 @@ Route::middleware(['auth:sanctum', 'role:admin,super_admin'])->prefix('admin')->
     Route::put('/products/{product}/variants/{variant}', [AdminProductController::class, 'updateVariant']);
     Route::delete('/products/{product}/variants/{variant}', [AdminProductController::class, 'destroyVariant']);
     Route::post('/products/{product}/images', [AdminProductController::class, 'uploadImage']);
+    Route::delete('/products/{product}/images/{image}', [AdminProductController::class, 'destroyImage']);
 
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{order}', [AdminOrderController::class, 'show']);

@@ -13,6 +13,7 @@ use App\Http\Resources\ProductImageResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -197,9 +198,16 @@ class AdminProductController extends Controller
         $filename = Str::slug($product->name).'-'.Str::random(8).'.'.$file->getClientOriginalExtension();
         $data['path'] = $file->storeAs('products/images', $filename, 'public');
 
-        // If this is set as thumbnail, unset other thumbnails
+        // A thumbnail is replaced, not accumulated: remove the previous
+        // thumbnail row and file so no orphaned uploads stay on disk.
         if ($data['is_thumbnail'] ?? false) {
-            $product->images()->where('is_thumbnail', true)->update(['is_thumbnail' => false]);
+            $product->images()->where('is_thumbnail', true)->get()->each(function (ProductImage $old) {
+                if (Storage::disk('public')->exists($old->path)) {
+                    Storage::disk('public')->delete($old->path);
+                }
+
+                $old->delete();
+            });
         }
 
         $image = $product->images()->create($data);
@@ -207,5 +215,18 @@ class AdminProductController extends Controller
         return (new ProductImageResource($image))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function destroyImage(Product $product, ProductImage $image)
+    {
+        abort_unless($image->product_id === $product->id, 404);
+
+        if (Storage::disk('public')->exists($image->path)) {
+            Storage::disk('public')->delete($image->path);
+        }
+
+        $image->delete();
+
+        return response()->json(['message' => 'Image deleted']);
     }
 }

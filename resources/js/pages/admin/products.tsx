@@ -21,7 +21,7 @@ interface Product {
     name: string;
     color_hex: string;
   }>;
-  images: Array<{ url: string }>;
+  images: Array<{ id: number; url: string; is_thumbnail: boolean }>;
   thumbnail?: { url: string } | null;
   created_at: string;
 }
@@ -55,9 +55,41 @@ function AdminProductsContent() {
 
   const createMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await api.post('/admin/products', formData, {
+      // The store endpoint only accepts product fields; files go to their own
+      // endpoints after the product exists. Let the browser set the multipart
+      // boundary (setting Content-Type manually drops it).
+      const payload = new FormData();
+      for (const key of ['name', 'slug', 'description', 'price', 'stock']) {
+        const value = formData.get(key);
+        if (value !== null) {
+          payload.append(key, value);
+        }
+      }
+
+      const response = await api.post('/admin/products', payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      const productId = response.data?.data?.id as number | undefined;
+
+      const image = formData.get('image');
+      if (productId && image instanceof File && image.size > 0) {
+        const imagePayload = new FormData();
+        imagePayload.append('image', image);
+        imagePayload.append('is_thumbnail', '1');
+        await api.post(`/admin/products/${productId}/images`, imagePayload, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
+
+      const glb = formData.get('glb');
+      if (productId && glb instanceof File && glb.size > 0) {
+        const glbPayload = new FormData();
+        glbPayload.append('glb', glb);
+        await api.post(`/admin/products/${productId}/glb`, glbPayload, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
+
       return response.data;
     },
     onSuccess: () => {
@@ -79,6 +111,47 @@ function AdminProductsContent() {
     mutationFn: async ({ id, payload }: { id: number; payload: Record<string, unknown> }) => {
       const response = await api.patch(`/admin/products/${id}`, payload);
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      setEditingProduct(null);
+    },
+  });
+
+  const uploadImageMutation = useMutation({
+    mutationFn: async ({ id, file }: { id: number; file: File }) => {
+      const payload = new FormData();
+      payload.append('image', file);
+      payload.append('is_thumbnail', '1');
+      const response = await api.post(`/admin/products/${id}/images`, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      setEditingProduct(null);
+    },
+  });
+
+  const uploadGlbMutation = useMutation({
+    mutationFn: async ({ id, file }: { id: number; file: File }) => {
+      const payload = new FormData();
+      payload.append('glb', file);
+      const response = await api.post(`/admin/products/${id}/glb`, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      setEditingProduct(null);
+    },
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: async ({ productId, imageId }: { productId: number; imageId: number }) => {
+      await api.delete(`/admin/products/${productId}/images/${imageId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
@@ -393,6 +466,21 @@ function AdminProductsContent() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Product Image (Optional)
+                  </label>
+                  <input
+                    name="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    JPG, PNG or WebP. Max 5MB. Uploaded as the product thumbnail.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     GLB Model (Optional)
                   </label>
                   <input
@@ -524,6 +612,96 @@ function AdminProductsContent() {
                   />
                   Active
                 </label>
+
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-4">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100">
+                    Images &amp; Model
+                  </h3>
+
+                  {editingProduct.images.length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {editingProduct.images.map((image) => (
+                        <div key={image.id} className="relative">
+                          <img
+                            src={image.url}
+                            alt={`${editingProduct.name} image`}
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                          />
+                          {image.is_thumbnail && (
+                            <span className="absolute top-1 left-1 px-2 py-0.5 rounded bg-primary-600 text-white text-[10px] font-medium">
+                              Thumbnail
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => deleteImageMutation.mutate({ productId: editingProduct.id, imageId: image.id })}
+                            disabled={deleteImageMutation.isPending}
+                            className="absolute bottom-1 right-1 px-2 py-0.5 rounded bg-red-600 text-white text-xs font-medium hover:bg-red-700 disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No images yet.</p>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Upload / replace thumbnail
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        disabled={uploadImageMutation.isPending}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            uploadImageMutation.mutate({ id: editingProduct.id, file });
+                          }
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                      {uploadImageMutation.isPending && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Uploading...</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Upload / replace GLB
+                      </label>
+                      <input
+                        type="file"
+                        accept=".glb"
+                        disabled={uploadGlbMutation.isPending}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            uploadGlbMutation.mutate({ id: editingProduct.id, file });
+                          }
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                      {uploadGlbMutation.isPending && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Uploading...</p>
+                      )}
+                      {editingProduct.glb_url ? (
+                        <a
+                          href={editingProduct.glb_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-block text-xs text-primary-600 dark:text-primary-400"
+                        >
+                          Current model
+                        </a>
+                      ) : (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">No model uploaded.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex gap-3 pt-4">
                   <button
