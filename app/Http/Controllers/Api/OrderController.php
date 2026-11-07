@@ -23,11 +23,18 @@ class OrderController extends Controller
 
         $query = Order::query()->where('code', $code);
 
-        if ($email) {
-            $query->where('buyer_email', $email);
-        } elseif ($phone) {
-            $query->where('buyer_phone', $phone);
-        }
+        // The buyer can prove ownership with either identifier. Group them so
+        // a wrong email does not hide a matching phone (the old if/elseif
+        // checked only the email when both were present).
+        $query->where(function ($query) use ($email, $phone) {
+            if ($email) {
+                $query->orWhere('buyer_email', $email);
+            }
+
+            if ($phone) {
+                $query->orWhere('buyer_phone', $phone);
+            }
+        });
 
         $order = $query->first();
 
