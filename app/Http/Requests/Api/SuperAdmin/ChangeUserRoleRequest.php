@@ -14,12 +14,6 @@ class ChangeUserRoleRequest extends FormRequest
 
     public function rules(): array
     {
-        $targetUser = $this->route('user');
-        $currentUser = $this->user();
-
-        // Cannot demote/delete self - handled in controller/policy
-        // Cannot remove last super admin - handled in controller
-
         return [
             'role' => ['required', 'string', 'in:user,admin,super_admin'],
         ];
@@ -27,7 +21,10 @@ class ChangeUserRoleRequest extends FormRequest
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator) use ($targetUser, $currentUser) {
+        $validator->after(function ($validator) {
+            $targetUser = $this->route('user');
+            $currentUser = $this->user();
+
             // Prevent self-demotion
             if ($targetUser->id === $currentUser->id) {
                 $validator->errors()->add('role', 'You cannot change your own role.');
