@@ -161,3 +161,55 @@ viewer's orbit controls.
 Until a real image is uploaded, product tiles, cart rows, checkout rows, and the
 detail gallery show a designed tumbler silhouette instead of a broken-image
 icon. Uploaded images require the `storage:link` step above.
+
+## Stock concurrency
+
+Checkout locks the product rows before it looks at the stock:
+
+| Step | Location |
+| --- | --- |
+| Transaction opens | `app/Services/CheckoutService.php:63` |
+| `lockForUpdate()` on the product rows | `app/Services/CheckoutService.php:65-68` |
+| Stock re-check (after the lock, same transaction) | `app/Services/CheckoutService.php:71-79` |
+| Order, order items and `stock` decrement (same transaction) | `app/Services/CheckoutService.php:99-114` |
+
+**SQLite does not implement row locking**, and the test suite runs on
+`sqlite :memory:` (`phpunit.xml`), so the suite can only prove the sequential
+case — `tests/Feature/OrderStockTest.php` ("an oversell is rejected and no
+order or stock change is written"). Do not read that test as proof of race
+safety.
+
+The concurrent case was verified manually against **MySQL 8.0.30**: two PHP
+processes (and, in a stress round, four) fired `POST /api/checkout/guest` for
+the last unit of one product at the same instant. Every round produced:
+
+- exactly one `201` (`Order created successfully`); the other request(s) got
+  `422` with `Insufficient stock for <product>`;
+- `products.stock` ended at `0` and never went negative (the column is
+  `int unsigned` in MySQL);
+- exactly one `orders` row and one `order_items` row, with no orphan
+  `order_items` and no order without items;
+- the MySQL general log and `performance_schema` showed the losing
+  transactions blocked on the locking read
+  (`select * from products where id in (1) for update`; 5.4 ms and
+  7.4/7.6 ms waits) until the winner committed, then read the committed stock
+  of `0` and rolled back.
+
+To repeat it, point the app at MySQL and run two application processes against
+the same database (one request per process, fired at the same moment):
+
+```bash
+# process A
+DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=tumbler \
+  php artisan serve --port=8011
+# process B
+DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=tumbler \
+  php artisan serve --port=8012
+```
+
+`php artisan serve` is single-threaded, so two processes are needed for a real
+race on a single machine.
+
+> The default database is SQLite. Deploy with MySQL (or another engine with
+> real row locking) if concurrent checkouts matter.
+
