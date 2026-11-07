@@ -16,13 +16,23 @@ composer install
 npm install
 cp .env.example .env
 php artisan key:generate
+touch database/database.sqlite
 php artisan migrate --seed
 php artisan storage:link
+npm run build
 ```
 
-`php artisan storage:link` is required: product images are served through
-`asset('storage/...')`, so uploads are unreachable without the `public/storage`
-symlink.
+- `touch database/database.sqlite` creates the SQLite database file. Without
+  it, `php artisan migrate --seed` stops on an interactive "create it?" prompt,
+  which breaks scripted setup. On Windows use
+  `type nul > database/database.sqlite`, or run
+  `php artisan migrate --force --seed`, which creates the file itself.
+- `npm run build` writes `public/build/manifest.json`. Without it every page
+  answers `500 ViteManifestNotFoundException`. `npm run dev` serves the assets
+  from the Vite dev server instead and does not need the build.
+- `php artisan storage:link` is required: product images are served through
+  `asset('storage/...')`, so uploads are unreachable without the `public/storage`
+  symlink.
 
 ### Environment
 
