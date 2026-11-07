@@ -18,6 +18,8 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         $isGuest = fake()->boolean(30);
+        // `$user` is a factory, not a model: read its key only after Laravel
+        // expands the nested factory (reading ->id here is undefined).
         $user = $isGuest ? null : User::factory();
 
         $subtotal = fake()->numberBetween(100000, 1000000);
@@ -25,7 +27,7 @@ class OrderFactory extends Factory
 
         return [
             'code' => 'TS-'.Str::upper(Str::random(8)),
-            'user_id' => $user?->id,
+            'user_id' => $user,
             'status' => fake()->randomElement(OrderStatus::values()),
             'subtotal' => $subtotal,
             'shipping_cost' => $shipping,
