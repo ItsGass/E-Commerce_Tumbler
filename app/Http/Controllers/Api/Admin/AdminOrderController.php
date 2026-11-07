@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderCollection;
@@ -81,7 +82,7 @@ class AdminOrderController extends Controller
 
     public function markPaid(Order $order)
     {
-        if ($order->status === 'paid') {
+        if ($order->status === OrderStatus::Paid) {
             return response()->json(['message' => 'Order already marked as paid']);
         }
 
