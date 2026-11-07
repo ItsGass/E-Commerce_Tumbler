@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { RequireRole } from '@/components/auth';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface User {
   id: number;
@@ -41,8 +42,18 @@ const ROLE_COLORS: Record<string, string> = {
   super_admin: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 };
 
+function extractErrorMessage(error: any): string {
+  const validationErrors = error?.response?.data?.errors;
+  const firstValidationError = validationErrors ? Object.values(validationErrors)[0] : undefined;
+  const firstNameError = Array.isArray(firstValidationError) ? firstValidationError[0] : undefined;
+
+  return firstNameError || error?.response?.data?.message || 'Something went wrong. Please try again.';
+}
+
 function AdminUsersContent() {
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
@@ -67,9 +78,11 @@ function AdminUsersContent() {
       return response.data;
     },
     onSuccess: () => {
+      setActionError(null);
       queryClient.invalidateQueries({ queryKey: ['super-admin', 'users'] });
       setShowCreateModal(false);
     },
+    onError: (error) => setActionError(extractErrorMessage(error)),
   });
 
   const updateMutation = useMutation({
@@ -78,9 +91,11 @@ function AdminUsersContent() {
       return response.data;
     },
     onSuccess: () => {
+      setActionError(null);
       queryClient.invalidateQueries({ queryKey: ['super-admin', 'users'] });
       setEditingUser(null);
     },
+    onError: (error) => setActionError(extractErrorMessage(error)),
   });
 
   const deleteMutation = useMutation({
@@ -88,8 +103,10 @@ function AdminUsersContent() {
       await api.delete(`/super-admin/users/${id}`);
     },
     onSuccess: () => {
+      setActionError(null);
       queryClient.invalidateQueries({ queryKey: ['super-admin', 'users'] });
     },
+    onError: (error) => setActionError(extractErrorMessage(error)),
   });
 
   const changeRoleMutation = useMutation({
@@ -98,18 +115,22 @@ function AdminUsersContent() {
       return response.data;
     },
     onSuccess: () => {
+      setActionError(null);
       queryClient.invalidateQueries({ queryKey: ['super-admin', 'users'] });
     },
+    onError: (error) => setActionError(extractErrorMessage(error)),
   });
 
   const handleRoleChange = (user: User, newRole: string) => {
     if (window.confirm(`Change ${user.name}'s role to ${newRole}?`)) {
+      setActionError(null);
       changeRoleMutation.mutate({ id: user.id, role: newRole });
     }
   };
 
   const confirmDelete = (user: User) => {
     if (window.confirm(`Are you sure you want to delete "${user.name}"? This action cannot be undone.`)) {
+      setActionError(null);
       deleteMutation.mutate(user.id);
     }
   };
@@ -127,7 +148,10 @@ function AdminUsersContent() {
             </p>
           </div>
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              setActionError(null);
+              setShowCreateModal(true);
+            }}
             className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,6 +160,15 @@ function AdminUsersContent() {
             Add User
           </button>
         </div>
+
+        {actionError && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400"
+          >
+            {actionError}
+          </div>
+        )}
 
         {/* Filters */}
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
@@ -191,7 +224,10 @@ function AdminUsersContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {data?.data.map((user) => (
+                    {data?.data.map((user) => {
+                      const isSelf = currentUser?.id === user.id;
+
+                      return (
                       <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-6 py-4">
                           <div>
@@ -203,9 +239,10 @@ function AdminUsersContent() {
                           <select
                             value={user.role}
                             onChange={(e) => handleRoleChange(user, e.target.value)}
-                            disabled={changeRoleMutation.isPending}
+                            disabled={changeRoleMutation.isPending || isSelf}
+                            title={isSelf ? 'You cannot change your own role' : undefined}
                             className={cn(
-                              'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
+                              'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60',
                               ROLE_COLORS[user.role]
                             )}
                           >
@@ -230,22 +267,27 @@ function AdminUsersContent() {
                         <td className="px-6 py-4 whitespace-nowrap text-right pr-6">
                           <div className="flex items-center justify-end gap-2">
                             <button
-                              onClick={() => setEditingUser(user)}
+                              onClick={() => {
+                                setActionError(null);
+                                setEditingUser(user);
+                              }}
                               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 text-sm font-medium"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => confirmDelete(user)}
-                              disabled={deleteMutation.isPending}
-                              className="text-red-600 dark:text-red-400 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                              disabled={deleteMutation.isPending || isSelf}
+                              title={isSelf ? 'You cannot delete your own account' : undefined}
+                              className="text-red-600 dark:text-red-400 hover:text-red-700 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
                             >
                               Delete
                             </button>
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                     {!data?.data.length && (
                       <tr>
                         <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
@@ -346,6 +388,10 @@ function AdminUsersContent() {
                   </div>
                 </div>
 
+                {actionError && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{actionError}</p>
+                )}
+
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">Cancel</button>
                   <button type="submit" disabled={createMutation.isPending} className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50">{createMutation.isPending ? 'Creating...' : 'Create User'}</button>
@@ -397,6 +443,10 @@ function AdminUsersContent() {
                     </div>
                   </div>
                 </div>
+
+                {actionError && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{actionError}</p>
+                )}
 
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setEditingUser(null)} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">Cancel</button>
