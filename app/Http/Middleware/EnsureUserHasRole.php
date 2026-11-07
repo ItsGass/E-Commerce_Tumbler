@@ -8,7 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserHasRole
 {
-    public function handle(Request $request, Closure $next, string $roles): Response
+    /**
+     * @param  string  ...$roles  Comma-separated middleware arguments arrive as
+     *                            one parameter each (`role:admin,super_admin`).
+     */
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
 
@@ -16,10 +20,7 @@ class EnsureUserHasRole
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $allowedRoles = array_map('trim', explode(',', $roles));
-        $userRole = $user->role->value;
-
-        if (! in_array($userRole, $allowedRoles, true)) {
+        if (! in_array($user->role->value, $roles, true)) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
