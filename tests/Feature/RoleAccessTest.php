@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Sanctum\Sanctum;
 
 function actingAsRole(string $role): User
@@ -71,6 +72,45 @@ test('the role middleware reports 401 for a guest and 403 for the wrong role', f
     actingAsRole('user');
 
     $this->getJson('/api/admin/products')
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Forbidden.');
+});
+
+test('a forbidden web page renders the 403 page instead of raw json', function () {
+    $this->actingAs(User::factory()->create(['role' => 'user']));
+
+    $response = $this->get('/admin');
+
+    $response->assertForbidden();
+    expect($response->headers->get('Content-Type'))->toContain('text/html');
+    $response->assertInertia(fn (Assert $page) => $page->component('errors/403'));
+    $response->assertDontSee('{"message":"Forbidden."}', false);
+});
+
+test('an admin gets the 403 page for the super-admin web route', function () {
+    $this->actingAs(User::factory()->create(['role' => 'admin']));
+
+    $this->get('/admin/users')
+        ->assertForbidden()
+        ->assertInertia(fn (Assert $page) => $page->component('errors/403'));
+});
+
+test('a super admin can open the user management page', function () {
+    $this->actingAs(User::factory()->create(['role' => 'super_admin']));
+
+    $this->get('/admin/users')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('admin/users'));
+});
+
+test('a guest visiting an admin page is redirected to login', function () {
+    $this->get('/admin')->assertRedirect('/login');
+});
+
+test('a web page request that expects json still gets the json 403', function () {
+    $this->actingAs(User::factory()->create(['role' => 'user']));
+
+    $this->get('/admin', ['Accept' => 'application/json'])
         ->assertForbidden()
         ->assertJsonPath('message', 'Forbidden.');
 });
