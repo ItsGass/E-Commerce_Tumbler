@@ -152,6 +152,13 @@ then found and fixed `CHECKOUT-CONFIRM`, `TRACK-CRASH`, `TRACK-PREFILL` and
   shows the designed silhouette rather than a photo.
 - **Stock is tracked per product, not per variant.** Variants share the
   product's `stock` column.
+- **`THREE.Clock` deprecation warning on viewer pages.** `three` 0.187 marks
+  `Clock` deprecated (`node_modules/three/src/core/Clock.js:61`) and
+  `@react-three/fiber` 9.8.2 still constructs one for its internal store
+  (`node_modules/@react-three/fiber/dist/events-e51d7528.esm.js:1207`). The app
+  itself never instantiates a `Clock`. This is a library warning, not an app
+  error; `node_modules` is not patched. It goes away when fiber stops creating
+  a `Clock` (or the dependency is upgraded).
 
 ## Tests and checks
 
