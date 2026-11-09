@@ -258,3 +258,27 @@ race on a single machine.
 > The default database is SQLite. Deploy with MySQL (or another engine with
 > real row locking) if concurrent checkouts matter.
 
+### Authenticated checkout path
+
+`POST /api/checkout/user` does not have a separate stock path. The controller
+builds the buyer from the authenticated user and calls the same
+`CheckoutService::createOrder()` (`app/Http/Controllers/Api/CheckoutController.php:49`;
+the guest call is `:18`), so the transaction and row lock above apply unchanged
+(`app/Services/CheckoutService.php:63` and `:65-68`).
+
+Verified separately against an isolated **MySQL 8.0.30** instance (port 3307,
+throwaway `--initialize-insecure` datadir; the project `.env` stayed on SQLite
+and the instance was removed afterwards). Two PHP servers (8010/8011) shared
+that database; two users logged in through Sanctum SPA cookies plus XSRF
+tokens, each with its own cookie jar; both checkout requests were fired with
+`Promise.all`. Four rounds (two single-item, two multi-item):
+
+| Round | Responses | Final stock (P1/P2) | Orders | Order items | Orphan items |
+| --- | --- | --- | --- | --- | --- |
+| single ×2 | one `201`, one `422` "Insufficient stock" | 0 / 1 | 1 | 1 | 0 |
+| multi [P1+P2] vs single [P1] | multi `201` + single `422` (round 2), or multi `422` + single `201` (round 1) | 0/0 or 0/1 | 1 | 2 or 1 | 0 |
+
+Every round ended with exactly one order, its items matching the winning
+request, no order without items and no orphan `order_items`; the losing
+transaction rolled back both its order row and any earlier stock decrement.
+
