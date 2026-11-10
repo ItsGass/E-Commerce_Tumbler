@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::inertia('/', 'home')->name('home');
+Route::get('/', HomeController::class)->name('home');
 Route::inertia('/products', 'products')->name('products');
 Route::inertia('/products/{slug}', 'product-detail')->name('product-detail');
 Route::inertia('/cart', 'cart')->name('cart');

@@ -3,40 +3,49 @@
 import { Link } from '@inertiajs/react';
 import { useProducts } from '@/hooks/useProducts';
 import { addProductToCart } from '@/hooks/useCart';
-import { ProductCard } from '@/components/product';
-import { cn } from '@/lib/utils';
+import { HeroMarquee, ProductCard, type HeroMarqueeProduct } from '@/components/product';
 
-export default function Home() {
+interface HomeProps {
+  heroProducts?: HeroMarqueeProduct[];
+}
+
+export default function Home({ heroProducts = [] }: HomeProps) {
   const { data, isLoading } = useProducts({ per_page: 4 });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 leading-tight">
-              Premium Tumblers for Every Adventure
-            </h1>
-            <p className="text-lg lg:text-xl text-primary-100 mb-8 max-w-2xl">
-              Discover our collection of handcrafted tumblers designed to keep your drinks at the perfect temperature. Quality materials, sustainable design, exceptional insulation.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/products"
-                className="inline-flex items-center px-8 py-4 bg-white text-primary-700 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
-              >
-                Shop Now
-                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link
-                href="/products"
-                className="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-colors"
-              >
-                View Collection
-              </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="max-w-xl min-w-0">
+              <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 leading-tight">
+                Premium Tumblers for Every Adventure
+              </h1>
+              <p className="text-lg lg:text-xl text-primary-100 mb-8">
+                Discover our collection of handcrafted tumblers designed to keep your drinks at the perfect temperature. Quality materials, sustainable design, exceptional insulation.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center px-8 py-4 bg-white text-primary-700 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
+                >
+                  Shop Now
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/products"
+                  className="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-colors"
+                >
+                  View Collection
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative min-w-0">
+              <HeroMarquee products={heroProducts} />
             </div>
           </div>
         </div>

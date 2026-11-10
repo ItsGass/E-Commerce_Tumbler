@@ -8,6 +8,8 @@ interface ProductImageProps {
   alt: string;
   /** Applied to the image, or to the fallback tile when there is no image. */
   className?: string;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
 }
 
 /**
@@ -18,7 +20,13 @@ interface ProductImageProps {
  * browser's broken-image glyph. Reset the failure state whenever `src` changes
  * so a newly uploaded image is retried instead of staying broken.
  */
-export function ProductImage({ src, alt, className }: ProductImageProps) {
+export function ProductImage({
+  src,
+  alt,
+  className,
+  loading = 'lazy',
+  decoding = 'async',
+}: ProductImageProps) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -67,7 +75,8 @@ export function ProductImage({ src, alt, className }: ProductImageProps) {
       src={src}
       alt={alt}
       className={cn('h-full w-full object-cover', className)}
-      loading="lazy"
+      loading={loading}
+      decoding={decoding}
       onError={() => setFailed(true)}
     />
   );

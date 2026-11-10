@@ -56,3 +56,242 @@
         touch-action: pan-y !important;
     }
 }
+
+/* Hero product marquee ------------------------------------------------------
+ *
+ * Three vertical tracks on desktop, two horizontal tracks below 1024px. Each
+ * track renders its card list twice; every keyframe travels exactly 50% of the
+ * track so the second copy lands where the first one started.
+ */
+
+@keyframes hero-marquee-up {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(0, -50%, 0);
+    }
+}
+
+@keyframes hero-marquee-down {
+    from {
+        transform: translate3d(0, -50%, 0);
+    }
+    to {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes hero-marquee-left {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@keyframes hero-marquee-right {
+    from {
+        transform: translate3d(-50%, 0, 0);
+    }
+    to {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@layer components {
+    .hero-marquee {
+        --marquee-gap: 1rem;
+        position: relative;
+        height: 34rem;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            #000 12%,
+            #000 88%,
+            transparent 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            #000 12%,
+            #000 88%,
+            transparent 100%
+        );
+    }
+
+    .hero-marquee__columns {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        gap: 1rem;
+        transform: rotate(-6deg) scale(1.08);
+        transform-origin: center;
+    }
+
+    .hero-marquee__track {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: column;
+        align-self: flex-start;
+        width: 11rem;
+        will-change: transform;
+        animation-duration: var(--marquee-duration, 36s);
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-play-state: running;
+    }
+
+    .hero-marquee__track--up {
+        animation-name: hero-marquee-up;
+    }
+
+    .hero-marquee__track--down {
+        animation-name: hero-marquee-down;
+    }
+
+    .hero-marquee:hover .hero-marquee__track,
+    .hero-marquee:focus-within .hero-marquee__track,
+    .hero-marquee--tab-hidden .hero-marquee__track {
+        animation-play-state: paused;
+    }
+
+    .hero-marquee__card {
+        position: relative;
+        display: block;
+        flex: 0 0 auto;
+        aspect-ratio: 4 / 5;
+        margin-bottom: var(--marquee-gap);
+        overflow: hidden;
+        border-radius: 1rem;
+        background-color: var(--color-primary-800);
+        box-shadow: var(--shadow-lift);
+        outline-offset: 3px;
+    }
+
+    .hero-marquee__caption {
+        position: absolute;
+        inset-inline: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        padding: 2.5rem 0.75rem 0.75rem;
+        color: #fff;
+        background: linear-gradient(to top, rgb(0 0 0 / 0.78), rgb(0 0 0 / 0));
+        opacity: 0;
+        transform: translateY(0.25rem);
+        transition:
+            opacity 180ms ease,
+            transform 180ms ease;
+    }
+
+    .hero-marquee__card:hover .hero-marquee__caption,
+    .hero-marquee__card:focus-visible .hero-marquee__caption {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .hero-marquee__name {
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .hero-marquee__price {
+        font-size: 0.7rem;
+        color: rgb(255 255 255 / 0.8);
+    }
+
+    .hero-marquee__static {
+        display: none;
+    }
+
+    @media (max-width: 1023px) {
+        .hero-marquee {
+            height: 20rem;
+            -webkit-mask-image: linear-gradient(
+                to right,
+                transparent 0%,
+                #000 8%,
+                #000 92%,
+                transparent 100%
+            );
+            mask-image: linear-gradient(
+                to right,
+                transparent 0%,
+                #000 8%,
+                #000 92%,
+                transparent 100%
+            );
+        }
+
+        .hero-marquee__columns {
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 0.75rem;
+            transform: rotate(-2deg) scale(1.02);
+        }
+
+        .hero-marquee__track {
+            flex-direction: row;
+            width: max-content;
+        }
+
+        .hero-marquee__track:nth-child(1) {
+            animation-name: hero-marquee-left;
+        }
+
+        .hero-marquee__track:nth-child(2) {
+            animation-name: hero-marquee-right;
+        }
+
+        .hero-marquee__track:nth-child(3) {
+            display: none;
+        }
+
+        .hero-marquee__card {
+            width: 9rem;
+            aspect-ratio: 1 / 1;
+            margin-right: 0.75rem;
+            margin-bottom: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-marquee {
+            height: auto;
+            -webkit-mask-image: none;
+            mask-image: none;
+        }
+
+        .hero-marquee__columns {
+            display: none;
+        }
+
+        .hero-marquee__track {
+            animation: none;
+            will-change: auto;
+        }
+
+        .hero-marquee__static {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .hero-marquee__static .hero-marquee__card {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            margin: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) and (min-width: 640px) {
+        .hero-marquee__static {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+}
