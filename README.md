@@ -7,7 +7,7 @@ Laravel 13 API + React 19 / Inertia v3 storefront with a procedural 3D tumbler v
 - PHP 8.5 with the `gd` extension
 - Composer
 - Node.js 22+ and npm
-- SQLite (default) or another Laravel-supported database
+- MySQL 8 (default). The automated test suite still uses SQLite `:memory:`.
 
 ## Setup
 
@@ -16,17 +16,16 @@ composer install
 npm install
 cp .env.example .env
 php artisan key:generate
-touch database/database.sqlite
+mysql -u root -p -e "CREATE DATABASE tumbler_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 php artisan migrate --seed
 php artisan storage:link
 npm run build
 ```
 
-- `touch database/database.sqlite` creates the SQLite database file. Without
-  it, `php artisan migrate --seed` stops on an interactive "create it?" prompt,
-  which breaks scripted setup. On Windows use
-  `type nul > database/database.sqlite`, or run
-  `php artisan migrate --force --seed`, which creates the file itself.
+- Create the `tumbler_shop` database before migrating. Adjust the MySQL command
+  for your user and host if they differ from `root` / `127.0.0.1`.
+- The test suite ignores the application database: `phpunit.xml` sets
+  `DB_CONNECTION=sqlite` and `DB_DATABASE=:memory:`.
 - `npm run build` writes `public/build/manifest.json`. Without it every page
   answers `500 ViteManifestNotFoundException`. `npm run dev` serves the assets
   from the Vite dev server instead and does not need the build.
@@ -42,12 +41,19 @@ login flow are:
 ```env
 APP_URL=http://localhost:8000
 FRONTEND_URL=http://localhost:5173
-DB_CONNECTION=sqlite
-DB_DATABASE=/absolute/path/to/database/database.sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tumbler_shop
+DB_USERNAME=root
+DB_PASSWORD=
 SESSION_DRIVER=database
 FILESYSTEM_DISK=local
 SANCTUM_STATEFUL_DOMAINS=localhost:8000,127.0.0.1:8000
 ```
+
+- The test suite overrides the database with SQLite `:memory:` in
+  `phpunit.xml`; keep MySQL for the running app.
 
 - `SANCTUM_STATEFUL_DOMAINS` must list the host **and port** the browser uses
   for the app (for example `localhost:8000`). Requests from a host that is not
@@ -121,7 +127,6 @@ Seeded accounts (`password123`):
 | PAYMENT | Payment is mocked: orders start `pending` and an admin marks them paid; there is no gateway, webhook or refund flow. | Out of scope for this stabilization batch. |
 | IOS | Responsive checks were run in Chrome/CDP at `390x844`; no physical iOS or Safari run. | No device available. |
 | SRCSET | Demo photos are committed at one optimized size per product, so product images have no `srcset`/`sizes` variants. | Meaningful responsive images need additional generated sizes and files, not a small markup change. |
-| MYSQL-DEFAULT | The application still defaults to SQLite; MySQL row locking was verified manually but is not the default or covered in CI. | Switching the default database needs environment, CI, and deployment changes outside this content batch. |
 
 ### New in Batch 5
 
@@ -152,9 +157,6 @@ then found and fixed `CHECKOUT-CONFIRM`, `TRACK-CRASH`, `TRACK-PREFILL` and
   Safari.
 - **Responsive `srcset` is deferred.** Each demo photo is committed at one
   optimized size, so mobile and desktop receive the same image file.
-- **MySQL is not the default.** The app defaults to SQLite. MySQL 8.0 row
-  locking was verified manually for concurrent checkouts, but changing the
-  default database to MySQL is still pending.
 - **Seeded demo images are opt-in.** A plain `migrate --seed` creates image rows
   without photo files, so the UI shows the designed silhouette. Run
   `SEED_DEMO_IMAGES=true php artisan migrate:fresh --seed` for the demo photo
@@ -301,23 +303,22 @@ the last unit of one product at the same instant. Every round produced:
   7.4/7.6 ms waits) until the winner committed, then read the committed stock
   of `0` and rolled back.
 
-To repeat it, point the app at MySQL and run two application processes against
-the same database (one request per process, fired at the same moment):
+To repeat it, run two application processes against the same MySQL database
+(one request per process, fired at the same moment):
 
 ```bash
 # process A
-DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=tumbler \
-  php artisan serve --port=8011
+php artisan serve --port=8011
 # process B
-DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=tumbler \
-  php artisan serve --port=8012
+php artisan serve --port=8012
 ```
 
 `php artisan serve` is single-threaded, so two processes are needed for a real
 race on a single machine.
 
-> The default database is SQLite. Deploy with MySQL (or another engine with
-> real row locking) if concurrent checkouts matter.
+> MySQL 8 is the default database and implements the row locking above. SQLite
+> is only the automated test database (`:memory:`); do not rely on it for
+> concurrent checkout safety.
 
 ### Authenticated checkout path
 
@@ -328,8 +329,7 @@ the guest call is `:18`), so the transaction and row lock above apply unchanged
 (`app/Services/CheckoutService.php:63` and `:65-68`).
 
 Verified separately against an isolated **MySQL 8.0.30** instance (port 3307,
-throwaway `--initialize-insecure` datadir; the project `.env` stayed on SQLite
-and the instance was removed afterwards). Two PHP servers (8010/8011) shared
+throwaway `--initialize-insecure` datadir). Two PHP servers (8010/8011) shared
 that database; two users logged in through Sanctum SPA cookies plus XSRF
 tokens, each with its own cookie jar; both checkout requests were fired with
 `Promise.all`. Four rounds (two single-item, two multi-item):
