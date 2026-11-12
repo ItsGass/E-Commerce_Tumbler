@@ -60,6 +60,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showViewer, setShowViewer] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const page = usePage();
   const mergedInitialProduct = product || initialProduct;
   // Route::inertia() sends no props, so fall back to the slug in the URL.
@@ -81,10 +82,13 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
   const selectedImageUrl = galleryImages[safeImageIndex]?.url || thumbnailUrl;
   const hasPhotos = galleryImages.length > 0;
   const showPhotos = hasPhotos && !showViewer;
+  const maxQuantity = Math.max(mergedProduct?.stock ?? 1, 1);
+  const quantityValue = Math.min(quantity, maxQuantity);
 
   useEffect(() => {
     setSelectedImageIndex(0);
     setShowViewer(false);
+    setQuantity(1);
   }, [slug]);
 
   if (!mergedProduct) {
@@ -125,7 +129,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
     addItem({
       productId: mergedProduct.id,
       variantId: selectedVariant?.id,
-      quantity: 1,
+      quantity: quantityValue,
       name: mergedProduct.name,
       price: mergedProduct.price,
       image: thumbnailUrl,
@@ -290,6 +294,38 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
             />
 
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Quantity
+                </span>
+                <div className="flex items-center rounded-lg border border-gray-300 dark:border-gray-600">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((value) => Math.max(1, Math.min(value, maxQuantity) - 1))}
+                    disabled={mergedProduct.stock === 0 || quantityValue <= 1}
+                    className="p-2.5 text-gray-600 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:text-white"
+                    aria-label="Decrease quantity"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <span className="w-10 text-center text-sm font-semibold text-gray-900 dark:text-gray-100" aria-live="polite">
+                    {quantityValue}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((value) => Math.min(maxQuantity, Math.min(value, maxQuantity) + 1))}
+                    disabled={mergedProduct.stock === 0 || quantityValue >= maxQuantity}
+                    className="p-2.5 text-gray-600 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:text-white"
+                    aria-label="Increase quantity"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
               <button
                 onClick={handleAddToCart}
                 disabled={mergedProduct.stock === 0}
@@ -297,7 +333,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                   'w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all',
                   'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                   mergedProduct.stock === 0
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
+                    ? 'bg-gray-200 text-gray-600 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300'
                     : 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25'
                 )}
               >

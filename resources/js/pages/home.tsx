@@ -62,8 +62,8 @@ export default function Home({ heroProducts = [] }: HomeProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H7a2 2 0 00-2 2v6l-1 1h16l-1-1V9z" />
                   </svg>
                 ),
-                title: 'Fast Shipping',
-                description: 'Free shipping on orders over Rp500.000. Most orders ship within 24 hours.',
+                title: 'Demo checkout',
+                description: 'Orders are placed in demo mode. No real payment is collected or charged.',
               },
               {
                 icon: (
@@ -71,8 +71,8 @@ export default function Home({ heroProducts = [] }: HomeProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 ),
-                title: 'Secure Checkout',
-                description: 'Your payment information is protected with bank-level encryption.',
+                title: 'Live stock counts',
+                description: 'Cards, product pages and checkout all use the same inventory numbers.',
               },
               {
                 icon: (
@@ -80,8 +80,8 @@ export default function Home({ heroProducts = [] }: HomeProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 ),
-                title: 'Easy Returns',
-                description: '30-day hassle-free returns. We want you to love your tumbler.',
+                title: 'Order tracking',
+                description: 'Every demo order gets a code and a tracking page at /track.',
               },
             ].map((feature, index) => (
               <div key={index} className="text-center p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -109,7 +109,7 @@ export default function Home({ heroProducts = [] }: HomeProps) {
                 Featured Products
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                Our most popular tumblers
+                A sample of the demo catalog
               </p>
             </div>
             <Link
@@ -147,6 +147,64 @@ export default function Home({ heroProducts = [] }: HomeProps) {
         </div>
       </section>
 
+      {/* Sample testimonials */}
+      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8 flex flex-wrap items-center gap-3">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              What customers say
+            </h2>
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold tracking-wide text-amber-900 uppercase dark:bg-amber-400/20 dark:text-amber-300">
+              Sample content — demo only
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                quote: 'The 3D view made it easy to pick a colour before ordering.',
+                name: 'Sample customer',
+                location: 'Jakarta',
+              },
+              {
+                quote: 'I could see the stock count before checkout, so there were no surprises.',
+                name: 'Sample customer',
+                location: 'Bandung',
+              },
+              {
+                quote: 'Tracking the demo order took one code and my email address.',
+                name: 'Sample customer',
+                location: 'Surabaya',
+              },
+            ].map((testimonial) => (
+              <figure
+                key={testimonial.quote}
+                className="rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-900"
+              >
+                <blockquote className="text-gray-700 dark:text-gray-300">
+                  “{testimonial.quote}”
+                </blockquote>
+                <figcaption className="mt-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                    SC
+                  </span>
+                  <span>
+                    <span className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {testimonial.name}
+                    </span>
+                    <span className="block text-sm text-gray-500 dark:text-gray-400">
+                      {testimonial.location}
+                    </span>
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+            These quotes are sample copy for this demo and are not real customer reviews.
+          </p>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white">
         <div className="max-w-3xl mx-auto text-center">
@@ -154,7 +212,7 @@ export default function Home({ heroProducts = [] }: HomeProps) {
             Ready to Find Your Perfect Tumbler?
           </h2>
           <p className="text-lg text-primary-100 mb-8 max-w-xl mx-auto">
-            Join thousands of satisfied customers who trust Tumbler Shop for their daily hydration needs.
+            Explore the demo catalog and place a sample order to see the whole checkout flow.
           </p>
           <Link
             href="/products"

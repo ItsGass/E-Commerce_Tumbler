@@ -10,6 +10,7 @@ interface ProductCardProps {
     name: string;
     slug: string;
     price: number;
+    stock?: number;
     thumbnail?: { url: string } | null;
     default_variant?: { id: number; name: string; color_hex: string } | null;
     variants?: Array<{ color_hex: string }>;
@@ -28,6 +29,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   const variantColors = product.variants?.slice(0, 4).map(v => v.color_hex) || 
     (product.default_variant?.color_hex ? [product.default_variant.color_hex] : ['#1a1a1a']);
+  const soldOut = typeof product.stock === 'number' && product.stock <= 0;
+  const lowStock = typeof product.stock === 'number' && product.stock > 0 && product.stock < 5;
 
   return (
     <article className={cn('group relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-card border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lift')}>
@@ -43,6 +46,17 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             alt={product.name}
             className="transition-transform duration-300 group-hover:scale-105"
           />
+
+          {soldOut && (
+            <span className="absolute top-2 left-2 rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+              Sold out
+            </span>
+          )}
+          {lowStock && (
+            <span className="absolute top-2 left-2 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900 shadow-sm dark:bg-amber-400 dark:text-amber-950">
+              Only {product.stock} left
+            </span>
+          )}
 
           {/* Variant color indicators */}
           {variantColors.length > 1 && (
@@ -74,12 +88,16 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         {/* Add to Cart Button */}
         <button
           onClick={() => onAddToCart(product)}
+          disabled={soldOut}
           className={cn(
             'w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-colors',
-            'bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900'
+            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900',
+            soldOut
+              ? 'bg-gray-200 text-gray-600 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300'
+              : 'bg-primary-600 text-white hover:bg-primary-700'
           )}
         >
-          Add to Cart
+          {soldOut ? 'Sold out' : 'Add to Cart'}
         </button>
       </div>
     </article>

@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { App } from '@inertiajs/react';
 import type { Page } from '@inertiajs/core';
 import { ProductCard } from './ProductCard';
-import { addProductToCart } from '@/hooks/useCart';
+import { addProductToCart, type AddToCartProduct } from '@/hooks/useCart';
 import { useCartStore } from '@/stores/useCartStore';
 import { RootProviders } from '@/components/AppShell';
 
@@ -12,6 +12,7 @@ const product = {
   name: 'Classic Stainless Tumbler',
   slug: 'classic-stainless-tumbler',
   price: 185000,
+  stock: 50,
   thumbnail: { url: '/storage/products/classic.jpg' },
   default_variant: { id: 7, name: 'Matte Black', color_hex: '#1a1a1a' },
   variants: [{ color_hex: '#1a1a1a' }, { color_hex: '#f5f5f5' }],
@@ -25,17 +26,30 @@ const fakePage = {
   sharedProps: [],
 } as unknown as Page;
 
-function CardPage() {
-  return <ProductCard product={product} onAddToCart={addProductToCart} />;
+function CardPage({
+  overrides,
+  onAddToCart = addProductToCart,
+}: {
+  overrides?: Partial<typeof product>;
+  onAddToCart?: (item: AddToCartProduct) => void;
+}) {
+  return <ProductCard product={{ ...product, ...overrides }} onAddToCart={onAddToCart} />;
 }
 
-function renderCard() {
+function renderCard(options?: {
+  overrides?: Partial<typeof product>;
+  onAddToCart?: (item: AddToCartProduct) => void;
+}) {
+  const Component = () => (
+    <CardPage overrides={options?.overrides} onAddToCart={options?.onAddToCart} />
+  );
+
   return render(
     <RootProviders>
       <App
         initialPage={fakePage}
-        initialComponent={CardPage}
-        resolveComponent={async () => CardPage}
+        initialComponent={Component}
+        resolveComponent={async () => Component}
         titleCallback={(title) => title}
       />
     </RootProviders>,
@@ -80,5 +94,24 @@ describe('ProductCard interactions', () => {
       variantColorHex: product.default_variant.color_hex,
     });
     expect(state.isOpen).toBe(true);
+  });
+
+  it('shows Sold out and disables Add to Cart when stock is zero', () => {
+    const onAddToCart = vi.fn();
+    renderCard({ overrides: { stock: 0 }, onAddToCart });
+
+    expect(screen.getAllByText('Sold out')).toHaveLength(2);
+    const button = screen.getByRole('button', { name: /sold out/i }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+
+    fireEvent.click(button);
+    expect(onAddToCart).not.toHaveBeenCalled();
+  });
+
+  it('shows the remaining count when stock is under five', () => {
+    renderCard({ overrides: { stock: 3 } });
+
+    expect(screen.getByText('Only 3 left')).toBeTruthy();
+    expect((screen.getByRole('button', { name: /add to cart/i }) as HTMLButtonElement).disabled).toBe(false);
   });
 });
