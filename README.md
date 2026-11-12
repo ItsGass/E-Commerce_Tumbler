@@ -214,6 +214,23 @@ seeder is idempotent: re-running it reuses the existing files and rows instead
 of duplicating them. The generated PNGs live in `storage/app/public`, which is
 git-ignored, so no binaries are committed.
 
+### Optimizing demo photos
+
+The full-resolution demo photos live in `database/seeders/demo-assets-src/`
+(mixed JPG/PNG/WebP, git-ignored, never committed). Optimize them into the
+committed asset folder before seeding:
+
+```bash
+php scripts/optimize-demo-assets.php
+```
+
+The script uses GD only. For every `{slug}-{1,2,3}.{jpg|jpeg|png|webp}` original
+it writes `database/seeders/demo-assets/{slug}-{1,2,3}.jpg`: no upscaling, max
+1200 px wide, 4:5 preserved, transparency flattened onto a neutral grey,
+EXIF orientation applied, metadata stripped, and quality stepped down from 78
+to a floor of 60 until the file is under 200 KB. Re-running it overwrites the
+outputs cleanly and never modifies the originals.
+
 ## Stock concurrency
 
 Checkout locks the product rows before it looks at the stock:
