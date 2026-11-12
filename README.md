@@ -120,6 +120,8 @@ Seeded accounts (`password123`):
 | GLB-RENDER | GLB upload, validation (extension/mime/size) and cleanup work, but no real `.glb` has been loaded in the viewer. | Needs a real asset and a visual check; upload alone does not prove the render path. |
 | PAYMENT | Payment is mocked: orders start `pending` and an admin marks them paid; there is no gateway, webhook or refund flow. | Out of scope for this stabilization batch. |
 | IOS | Responsive checks were run in Chrome/CDP at `390x844`; no physical iOS or Safari run. | No device available. |
+| SRCSET | Demo photos are committed at one optimized size per product, so product images have no `srcset`/`sizes` variants. | Meaningful responsive images need additional generated sizes and files, not a small markup change. |
+| MYSQL-DEFAULT | The application still defaults to SQLite; MySQL row locking was verified manually but is not the default or covered in CI. | Switching the default database needs environment, CI, and deployment changes outside this content batch. |
 
 ### New in Batch 5
 
@@ -148,8 +150,15 @@ then found and fixed `CHECKOUT-CONFIRM`, `TRACK-CRASH`, `TRACK-PREFILL` and
 - **No iOS device testing.** Layout and touch behavior were checked in headless
   Chrome at 1440px and 390px (light and dark), not on a physical iPhone or in
   Safari.
-- **Seeded product images have no files.** Until an image is uploaded, the UI
-  shows the designed silhouette rather than a photo.
+- **Responsive `srcset` is deferred.** Each demo photo is committed at one
+  optimized size, so mobile and desktop receive the same image file.
+- **MySQL is not the default.** The app defaults to SQLite. MySQL 8.0 row
+  locking was verified manually for concurrent checkouts, but changing the
+  default database to MySQL is still pending.
+- **Seeded demo images are opt-in.** A plain `migrate --seed` creates image rows
+  without photo files, so the UI shows the designed silhouette. Run
+  `SEED_DEMO_IMAGES=true php artisan migrate:fresh --seed` for the demo photo
+  set; products without optimized photos get a GD placeholder.
 - **Stock is tracked per product, not per variant.** Variants share the
   product's `stock` column.
 - **`THREE.Clock` deprecation warning on viewer pages.** `three` 0.187 marks
@@ -184,44 +193,45 @@ The viewer only loads on product detail pages. Vertical swipes pan the page,
 horizontal drags rotate the model, and two-finger pinch is handled by the
 viewer's orbit controls.
 
-## Product images
+## Demo content
 
-`ProductSeeder` creates image rows whose files are intentionally not generated.
-Until a real image is uploaded, product tiles, cart rows, checkout rows, and the
-detail gallery show a designed tumbler silhouette instead of a broken-image
-icon. Uploaded images require the `storage:link` step above.
+This repository seeds a demo catalogue, demo photos, and static sample
+testimonials. None of it is real customer data, real payment data, or real
+shipping data.
 
-### Demo product images (opt-in)
+### Seeding the demo
 
-For a demo catalogue that is not full of silhouette tiles, the seeder copies
-the optimized photos from `database/seeders/demo-assets/` to the public disk
-under `products/images/` and creates three image rows per product: `-1` is the
-thumbnail, `-2` and `-3` fill the detail gallery. A product with no optimized
-photos falls back to one small solid-colour PNG generated with GD when the
-extension is available.
-
-This is **opt-in**. A plain `php artisan db:seed` does not copy images, and a
-product without photos does not need the `gd` extension:
+The full demo reset copies the committed optimized photos together with the
+catalogue rows:
 
 ```bash
-# copy the demo images together with the rest of the seed
-SEED_DEMO_IMAGES=true php artisan db:seed
+SEED_DEMO_IMAGES=true php artisan migrate:fresh --seed
+```
 
-# or run only the demo image seeder
+`migrate:fresh` drops and rebuilds every table, so use it only for a local demo
+database. For an existing database, copy the photos without resetting:
+
+```bash
+SEED_DEMO_IMAGES=true php artisan db:seed
+# or only the image seeder
 php artisan db:seed --class=DemoImageSeeder
 ```
 
 `SEED_DEMO_IMAGES` is listed in `.env.example` and defaults to `false`. The
 seeder is idempotent: re-running it reuses the existing rows and only rewrites
 a photo whose source bytes changed. Replacing a generated placeholder removes
-the stale row and file. The copied photos and fallback PNGs live in
-`storage/app/public`, which is git-ignored, so no binaries are committed.
+the stale row and file. The copied photos live in `storage/app/public`, which is
+git-ignored.
 
-### Optimizing demo photos
+### Demo asset folders
 
-The full-resolution demo photos live in `database/seeders/demo-assets-src/`
-(mixed JPG/PNG/WebP, git-ignored, never committed). Optimize them into the
-committed asset folder before seeding:
+| Path | Git status | Purpose |
+| --- | --- | --- |
+| `database/seeders/demo-assets-src/` | Git-ignored | Local full-resolution originals (`{slug}-{1,2,3}.{jpg,jpeg,png,webp}`). Never committed and never read by the seeder. |
+| `database/seeders/demo-assets/` | Committed | Optimized JPEGs (`{slug}-{1,2,3}.jpg`) that `DemoImageSeeder` copies to the public disk. |
+| `scripts/optimize-demo-assets.php` | Committed | GD-only optimizer that turns the originals into the committed JPEGs. |
+
+Optimize the originals before seeding:
 
 ```bash
 php scripts/optimize-demo-assets.php
@@ -229,10 +239,34 @@ php scripts/optimize-demo-assets.php
 
 The script uses GD only. For every `{slug}-{1,2,3}.{jpg|jpeg|png|webp}` original
 it writes `database/seeders/demo-assets/{slug}-{1,2,3}.jpg`: no upscaling, max
-1200 px wide, 4:5 preserved, transparency flattened onto a neutral grey,
-EXIF orientation applied, metadata stripped, and quality stepped down from 78
-to a floor of 60 until the file is under 200 KB. Re-running it overwrites the
-outputs cleanly and never modifies the originals.
+1200 px wide, 4:5 preserved, transparency flattened onto a neutral grey, EXIF
+orientation applied, metadata stripped, and quality stepped down from 78 to a
+floor of 60 until the file is under 200 KB. Re-running it overwrites the outputs
+cleanly and never modifies the originals.
+
+### Missing photos
+
+`DemoImageSeeder` creates three image rows per product when optimized photos
+exist (`-1` is the thumbnail, `-2` and `-3` fill the detail gallery). A product
+with no optimized photos falls back to a 600×600 solid-colour PNG placeholder
+with a simple tumbler silhouette, generated with GD when the extension is
+loaded. If GD is unavailable, or an uploaded image file is missing, the
+`ProductImage` component shows its designed silhouette rather than a
+broken-image glyph. Uploaded images require the `storage:link` step above.
+
+### Sample testimonials
+
+The home page "What customers say" section is static sample copy: three quotes
+stored in the page component, labelled `Sample content — demo only` with a
+"not real customer reviews" disclaimer. There is no testimonials table and no
+customer data behind them.
+
+### Demo content credits
+
+| File pattern | Source | Date | License / usage note |
+| --- | --- | --- | --- |
+| `database/seeders/demo-assets-src/{slug}-{1,2,3}.{jpg,jpeg,png,webp}` | AI-generated images; generator: [ISI NAMA GENERATOR] | [ISI TANGGAL] | Local originals for this demo only; not committed. |
+| `database/seeders/demo-assets/{slug}-{1,2,3}.jpg` | AI-generated images; generator: [ISI NAMA GENERATOR] | [ISI TANGGAL] | Committed only for this demo's seeded catalogue. Not product photography; replace before commercial use. |
 
 ## Stock concurrency
 
