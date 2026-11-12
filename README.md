@@ -265,8 +265,8 @@ customer data behind them.
 
 | File pattern | Source | Date | License / usage note |
 | --- | --- | --- | --- |
-| `database/seeders/demo-assets-src/{slug}-{1,2,3}.{jpg,jpeg,png,webp}` | AI-generated images; generator: [ISI NAMA GENERATOR] | [ISI TANGGAL] | Local originals for this demo only; not committed. |
-| `database/seeders/demo-assets/{slug}-{1,2,3}.jpg` | AI-generated images; generator: [ISI NAMA GENERATOR] | [ISI TANGGAL] | Committed only for this demo's seeded catalogue. Not product photography; replace before commercial use. |
+| `database/seeders/demo-assets-src/{slug}-{1,2,3}.{jpg,jpeg,png,webp}` | AI-generated images; generator: ChatGPT, Gemini | 11-12-2026 | Local originals for this demo only; not committed. |
+| `database/seeders/demo-assets/{slug}-{1,2,3}.jpg` | AI-generated images; generator: ChatGPT, Gemini | 11-12-2026 | Committed only for this demo's seeded catalogue. Not product photography; replace before commercial use. |
 
 ## Stock concurrency
 
