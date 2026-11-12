@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useProduct, useProductViewer } from '@/hooks/useProducts';
 import { useCartStore } from '@/stores/useCartStore';
@@ -58,6 +58,8 @@ function formatPrice(price: number) {
 
 export default function ProductDetail({ product, initialProduct }: ProductDetailProps) {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showViewer, setShowViewer] = useState(false);
   const page = usePage();
   const mergedInitialProduct = product || initialProduct;
   // Route::inertia() sends no props, so fall back to the slug in the URL.
@@ -74,10 +76,47 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
   const glbUrl = mergedProduct?.glb_url || viewerData?.product?.glb_url || null;
   const selectedVariant = variants[selectedVariantIndex];
 
+  const galleryImages = (mergedProduct?.images || []).filter((image) => Boolean(image.url));
+  const safeImageIndex = Math.min(selectedImageIndex, Math.max(galleryImages.length - 1, 0));
+  const selectedImageUrl = galleryImages[safeImageIndex]?.url || thumbnailUrl;
+  const hasPhotos = galleryImages.length > 0;
+  const showPhotos = hasPhotos && !showViewer;
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+    setShowViewer(false);
+  }, [slug]);
+
   if (!mergedProduct) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto animate-pulse">
+          <div className="mb-6 h-5 w-64 rounded bg-gray-200 dark:bg-gray-800" />
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <div className="space-y-4">
+              <div className="aspect-[4/5] w-full rounded-xl bg-gray-200 dark:bg-gray-800" />
+              <div className="flex gap-2">
+                {[0, 1, 2].map((index) => (
+                  <div
+                    key={index}
+                    className="aspect-[4/5] w-16 sm:w-20 rounded-lg bg-gray-200 dark:bg-gray-800"
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="h-10 w-3/4 rounded bg-gray-200 dark:bg-gray-800" />
+              <div className="h-8 w-1/3 rounded bg-gray-200 dark:bg-gray-800" />
+              <div className="h-6 w-32 rounded-full bg-gray-200 dark:bg-gray-800" />
+              <div className="space-y-2">
+                <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-800" />
+                <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-800" />
+                <div className="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-800" />
+              </div>
+              <div className="h-14 w-full rounded-lg bg-gray-200 dark:bg-gray-800" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -127,34 +166,73 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div className="relative">
-              <ProductViewer3D
-                glbUrl={glbUrl}
-                variantTextures={variants}
-                defaultVariantIndex={selectedVariantIndex}
-                fallbackImage={thumbnailUrl}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
-              />
+              {showPhotos ? (
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                  <ProductImage
+                    src={selectedImageUrl}
+                    alt={mergedProduct.name}
+                    loading="eager"
+                  />
+                </div>
+              ) : (
+                <ProductViewer3D
+                  glbUrl={glbUrl}
+                  variantTextures={variants}
+                  defaultVariantIndex={selectedVariantIndex}
+                  fallbackImage={selectedImageUrl}
+                  className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+                />
+              )}
             </div>
 
-            {mergedProduct.images && mergedProduct.images.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {mergedProduct.images.map((image, index) => (
-                  <button
-                    key={image.id ?? index}
-                    className={cn(
-                      'relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all',
-                      index === 0
-                        ? 'border-primary-500'
-                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'
-                    )}
-                    aria-label={`View image ${index + 1}`}
-                  >
-                    <ProductImage
-                      src={image.url}
-                      alt={`${mergedProduct.name} - Image ${index + 1}`}
-                    />
-                  </button>
-                ))}
+            {hasPhotos && (
+              <div className="flex flex-wrap items-center gap-2">
+                <div
+                  className="flex gap-2 overflow-x-auto pb-2"
+                  role="group"
+                  aria-label={`${mergedProduct.name} photos`}
+                >
+                  {galleryImages.map((image, index) => {
+                    const isActive = !showViewer && index === safeImageIndex;
+
+                    return (
+                      <button
+                        key={image.id ?? index}
+                        type="button"
+                        onClick={() => {
+                          setSelectedImageIndex(index);
+                          setShowViewer(false);
+                        }}
+                        className={cn(
+                          'relative aspect-[4/5] w-16 sm:w-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all',
+                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950',
+                          isActive
+                            ? 'border-primary-500'
+                            : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'
+                        )}
+                        aria-label={`Show ${mergedProduct.name} photo ${index + 1}`}
+                        aria-pressed={isActive}
+                      >
+                        <ProductImage src={image.url} alt={mergedProduct.name} />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowViewer((value) => !value)}
+                  aria-pressed={showViewer}
+                  className={cn(
+                    'ml-auto inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950',
+                    showViewer
+                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800'
+                  )}
+                >
+                  {showViewer ? 'Photo gallery' : '3D view'}
+                </button>
               </div>
             )}
           </div>

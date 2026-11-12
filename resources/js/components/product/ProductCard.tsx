@@ -37,7 +37,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         className="block"
         aria-label={`View ${product.name}`}
       >
-        <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 dark:bg-gray-800">
           <ProductImage
             src={product.thumbnail?.url}
             alt={product.name}

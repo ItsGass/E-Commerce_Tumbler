@@ -193,26 +193,29 @@ icon. Uploaded images require the `storage:link` step above.
 
 ### Demo product images (opt-in)
 
-For a demo catalogue that is not full of silhouette tiles, the seeder can
-generate one small solid-colour PNG per product with GD. The generated files
-are written to the public disk under `products/images/` and the product's
-thumbnail row is pointed at them.
+For a demo catalogue that is not full of silhouette tiles, the seeder copies
+the optimized photos from `database/seeders/demo-assets/` to the public disk
+under `products/images/` and creates three image rows per product: `-1` is the
+thumbnail, `-2` and `-3` fill the detail gallery. A product with no optimized
+photos falls back to one small solid-colour PNG generated with GD when the
+extension is available.
 
-This is **opt-in**. A plain `php artisan db:seed` does not generate images and
-does not need the `gd` extension:
+This is **opt-in**. A plain `php artisan db:seed` does not copy images, and a
+product without photos does not need the `gd` extension:
 
 ```bash
-# generate the demo images together with the rest of the seed
+# copy the demo images together with the rest of the seed
 SEED_DEMO_IMAGES=true php artisan db:seed
 
-# or generate only the demo images
+# or run only the demo image seeder
 php artisan db:seed --class=DemoImageSeeder
 ```
 
 `SEED_DEMO_IMAGES` is listed in `.env.example` and defaults to `false`. The
-seeder is idempotent: re-running it reuses the existing files and rows instead
-of duplicating them. The generated PNGs live in `storage/app/public`, which is
-git-ignored, so no binaries are committed.
+seeder is idempotent: re-running it reuses the existing rows and only rewrites
+a photo whose source bytes changed. Replacing a generated placeholder removes
+the stale row and file. The copied photos and fallback PNGs live in
+`storage/app/public`, which is git-ignored, so no binaries are committed.
 
 ### Optimizing demo photos
 
