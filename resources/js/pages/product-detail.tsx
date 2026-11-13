@@ -93,31 +93,31 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
 
   if (!mergedProduct) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto animate-pulse">
-          <div className="mb-6 h-5 w-64 rounded bg-gray-200 dark:bg-gray-800" />
+      <div className="min-h-screen bg-page py-8">
+        <div className="container-page animate-pulse">
+          <div className="mb-6 h-5 w-64 rounded bg-panel" />
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             <div className="space-y-4">
-              <div className="aspect-[4/5] w-full rounded-xl bg-gray-200 dark:bg-gray-800" />
+              <div className="aspect-[4/5] w-full rounded-xl bg-panel" />
               <div className="flex gap-2">
                 {[0, 1, 2].map((index) => (
                   <div
                     key={index}
-                    className="aspect-[4/5] w-16 sm:w-20 rounded-lg bg-gray-200 dark:bg-gray-800"
+                    className="aspect-[4/5] w-16 sm:w-20 rounded-lg bg-panel"
                   />
                 ))}
               </div>
             </div>
             <div className="space-y-4">
-              <div className="h-10 w-3/4 rounded bg-gray-200 dark:bg-gray-800" />
-              <div className="h-8 w-1/3 rounded bg-gray-200 dark:bg-gray-800" />
-              <div className="h-6 w-32 rounded-full bg-gray-200 dark:bg-gray-800" />
+              <div className="h-10 w-3/4 rounded bg-panel" />
+              <div className="h-8 w-1/3 rounded bg-panel" />
+              <div className="h-6 w-32 rounded-full bg-panel" />
               <div className="space-y-2">
-                <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-800" />
-                <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-800" />
-                <div className="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-800" />
+                <div className="h-4 w-full rounded bg-panel" />
+                <div className="h-4 w-full rounded bg-panel" />
+                <div className="h-4 w-2/3 rounded bg-panel" />
               </div>
-              <div className="h-14 w-full rounded-lg bg-gray-200 dark:bg-gray-800" />
+              <div className="h-14 w-full rounded-lg bg-panel" />
             </div>
           </div>
         </div>
@@ -140,12 +140,12 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-page py-8">
+      <div className="container-page">
         <nav className="mb-6 text-sm" aria-label="Breadcrumb">
-          <ol className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+          <ol className="flex items-center space-x-2 text-muted">
             <li>
-              <Link href="/" className="hover:text-gray-700 dark:hover:text-gray-300">
+              <Link href="/" className="hover:text-ink">
                 Home
               </Link>
             </li>
@@ -153,14 +153,14 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
               <span className="mx-2">/</span>
               <Link 
                 href="/products" 
-                className="hover:text-gray-700 dark:hover:text-gray-300"
+                className="hover:text-ink"
               >
                 Products
               </Link>
             </li>
             <li className="flex items-center">
               <span className="mx-2">/</span>
-              <span className="text-gray-900 dark:text-gray-100 font-medium truncate max-w-xs">
+              <span className="text-ink font-medium truncate max-w-xs">
                 {mergedProduct.name}
               </span>
             </li>
@@ -171,7 +171,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
           <div className="space-y-4">
             <div className="relative">
               {showPhotos ? (
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-hairline bg-surface shadow-card">
                   <ProductImage
                     src={selectedImageUrl}
                     alt={mergedProduct.name}
@@ -184,7 +184,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                   variantTextures={variants}
                   defaultVariantIndex={selectedVariantIndex}
                   fallbackImage={selectedImageUrl}
-                  className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+                  className="bg-surface rounded-xl shadow-card border border-hairline"
                 />
               )}
             </div>
@@ -209,10 +209,10 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                         }}
                         className={cn(
                           'relative aspect-[4/5] w-16 sm:w-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all',
-                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950',
+                          'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-page',
                           isActive
-                            ? 'border-primary-500'
-                            : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'
+                            ? 'border-accent'
+                            : 'border-transparent hover:border-muted/40'
                         )}
                         aria-label={`Show ${mergedProduct.name} photo ${index + 1}`}
                         aria-pressed={isActive}
@@ -229,10 +229,10 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                   aria-pressed={showViewer}
                   className={cn(
                     'ml-auto inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-page',
                     showViewer
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800'
+                      ? 'border-accent bg-panel text-accent'
+                      : 'border-hairline text-ink hover:bg-panel dark:text-muted'
                   )}
                 >
                   {showViewer ? 'Photo gallery' : '3D view'}
@@ -243,10 +243,10 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
 
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-ink mb-2">
                 {mergedProduct.name}
               </h1>
-              <p className="text-2xl font-semibold text-primary-600 dark:text-primary-400">
+              <p className="text-2xl font-semibold text-accent">
                 {formatPrice(mergedProduct.price)}
               </p>
             </div>
@@ -254,26 +254,26 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
             <div className={cn(
               'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium',
               mergedProduct.stock > 10
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                ? 'bg-success-tint text-success'
                 : mergedProduct.stock > 0
-                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                ? 'bg-warning-tint text-warning'
+                : 'bg-danger-tint text-danger'
             )}>
               {mergedProduct.stock > 10 && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="w-2 h-2 rounded-full bg-success-tint0" />
                   In Stock ({mergedProduct.stock} available)
                 </>
               )}
               {mergedProduct.stock > 0 && mergedProduct.stock <= 10 && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="w-2 h-2 rounded-full bg-warning" />
                   Low Stock ({mergedProduct.stock} left)
                 </>
               )}
               {mergedProduct.stock === 0 && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="w-2 h-2 rounded-full bg-danger-tint0" />
                   Out of Stock
                 </>
               )}
@@ -281,7 +281,7 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
 
             {mergedProduct.description && (
               <div className="prose dark:prose-invert max-w-none">
-                <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
+                <p className="text-muted whitespace-pre-wrap">
                   {mergedProduct.description}
                 </p>
               </div>
@@ -293,31 +293,31 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
               onSelect={setSelectedVariantIndex}
             />
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="pt-4 border-t border-hairline">
               <div className="mb-4 flex items-center justify-between gap-4">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-sm font-medium text-ink">
                   Quantity
                 </span>
-                <div className="flex items-center rounded-lg border border-gray-300 dark:border-gray-600">
+                <div className="flex items-center rounded-lg border border-hairline">
                   <button
                     type="button"
                     onClick={() => setQuantity((value) => Math.max(1, Math.min(value, maxQuantity) - 1))}
                     disabled={mergedProduct.stock === 0 || quantityValue <= 1}
-                    className="p-2.5 text-gray-600 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:text-white"
+                    className="p-2.5 text-muted hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Decrease quantity"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                     </svg>
                   </button>
-                  <span className="w-10 text-center text-sm font-semibold text-gray-900 dark:text-gray-100" aria-live="polite">
+                  <span className="w-10 text-center text-sm font-semibold text-ink" aria-live="polite">
                     {quantityValue}
                   </span>
                   <button
                     type="button"
                     onClick={() => setQuantity((value) => Math.min(maxQuantity, Math.min(value, maxQuantity) + 1))}
                     disabled={mergedProduct.stock === 0 || quantityValue >= maxQuantity}
-                    className="p-2.5 text-gray-600 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:text-white"
+                    className="p-2.5 text-muted hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Increase quantity"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,28 +331,28 @@ export default function ProductDetail({ product, initialProduct }: ProductDetail
                 disabled={mergedProduct.stock === 0}
                 className={cn(
                   'w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all',
-                  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                  'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2',
                   mergedProduct.stock === 0
-                    ? 'bg-gray-200 text-gray-600 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300'
-                    : 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25'
+                    ? 'bg-panel text-muted cursor-not-allowed dark:text-muted'
+                    : 'bg-accent text-accent-foreground hover:bg-accent-hover hover:shadow-soft'
                 )}
               >
                 {mergedProduct.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
             </div>
 
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-muted">
               <p>Cart: {cartItemCount} item{cartItemCount !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>
 
         <section className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+          <h2 className="text-2xl font-bold text-ink mb-6">
             You May Also Like
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <p className="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">
+            <p className="col-span-full text-center text-muted py-8">
               Related products coming soon...
             </p>
           </div>

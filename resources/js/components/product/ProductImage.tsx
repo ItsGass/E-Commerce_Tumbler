@@ -37,7 +37,7 @@ export function ProductImage({
     return (
       <div
         className={cn(
-          'flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800',
+          'flex h-full w-full items-center justify-center bg-gradient-to-br from-tint-1 via-surface to-tint-4',
           className
         )}
         role="img"
@@ -45,7 +45,7 @@ export function ProductImage({
       >
         <svg
           viewBox="0 0 64 80"
-          className="h-[72%] w-auto text-primary-600/25 dark:text-primary-300/25"
+          className="h-[72%] w-auto text-accent/25"
           fill="none"
           aria-hidden="true"
         >

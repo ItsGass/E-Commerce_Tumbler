@@ -124,13 +124,13 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-page py-16">
+      <div className="container-page max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-ink mb-2">
             Profile Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted">
             Manage your account information and shipping address
           </p>
         </div>
@@ -139,15 +139,15 @@ export default function Profile() {
         <div className={cn(
           'mb-8 p-4 rounded-xl border',
           profileComplete
-            ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800'
-            : 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800'
+            ? 'bg-success-tint border-success/30'
+            : 'bg-warning-tint border-warning/30'
         )}>
           <div className="flex items-center gap-3">
             <div className={cn(
               'w-10 h-10 rounded-full flex items-center justify-center',
               profileComplete
-                ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+                ? 'bg-success-tint text-success'
+                : 'bg-warning-tint text-warning'
             )}>
               {profileComplete ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,10 +160,10 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">
+              <p className="font-medium text-ink">
                 {profileComplete ? 'Profile Complete' : 'Profile Incomplete'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted">
                 {profileComplete
                   ? 'Your profile is complete. You can checkout seamlessly.'
                   : 'Complete your profile to enable one-click checkout.'}
@@ -173,21 +173,21 @@ export default function Profile() {
         </div>
 
         {success && (
-          <div className="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
+          <div className="mb-6 bg-success-tint border border-success/30 text-success px-4 py-3 rounded-lg text-sm">
             Profile updated successfully!
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-card border border-hairline overflow-hidden">
           {/* Personal Info */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="p-6 border-b border-hairline">
+            <h2 className="text-xl font-bold text-ink mb-4">
               Personal Information
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4" id="profile-form">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink mb-1">
                     Full Name *
                   </label>
                   <input
@@ -196,14 +196,14 @@ export default function Profile() {
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
                     className={cn(
-                      'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                      errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                      errors.name ? 'border-danger' : 'border-hairline'
                     )}
                   />
-                  {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                  {errors.name && <p className="mt-1 text-sm text-danger">{errors.name}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink mb-1">
                     Email *
                   </label>
                   <input
@@ -212,15 +212,15 @@ export default function Profile() {
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
                     className={cn(
-                      'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                      errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                      errors.email ? 'border-danger' : 'border-hairline'
                     )}
                   />
-                  {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+                  {errors.email && <p className="mt-1 text-sm text-danger">{errors.email}</p>}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink mb-1">
                   Phone *
                 </label>
                 <input
@@ -229,23 +229,23 @@ export default function Profile() {
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
                   required
                   className={cn(
-                    'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                    errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                    errors.phone ? 'border-danger' : 'border-hairline'
                   )}
                 />
-                {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
+                {errors.phone && <p className="mt-1 text-sm text-danger">{errors.phone}</p>}
               </div>
             </form>
           </div>
 
           {/* Shipping Address */}
           <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-xl font-bold text-ink mb-4">
               Shipping Address
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink mb-1">
                   Street Address *
                 </label>
                 <input
@@ -254,15 +254,15 @@ export default function Profile() {
                   onChange={(e) => setFormData({...formData, street: e.target.value})}
                   required
                   className={cn(
-                    'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                    errors.street ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                    errors.street ? 'border-danger' : 'border-hairline'
                   )}
                 />
-                {errors.street && <p className="mt-1 text-sm text-red-500">{errors.street}</p>}
+                {errors.street && <p className="mt-1 text-sm text-danger">{errors.street}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink mb-1">
                     City *
                   </label>
                   <input
@@ -271,14 +271,14 @@ export default function Profile() {
                     onChange={(e) => setFormData({...formData, city: e.target.value})}
                     required
                     className={cn(
-                      'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                      errors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                      errors.city ? 'border-danger' : 'border-hairline'
                     )}
                   />
-                  {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
+                  {errors.city && <p className="mt-1 text-sm text-danger">{errors.city}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink mb-1">
                     Province *
                   </label>
                   <input
@@ -287,14 +287,14 @@ export default function Profile() {
                     onChange={(e) => setFormData({...formData, province: e.target.value})}
                     required
                     className={cn(
-                      'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                      errors.province ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                      errors.province ? 'border-danger' : 'border-hairline'
                     )}
                   />
-                  {errors.province && <p className="mt-1 text-sm text-red-500">{errors.province}</p>}
+                  {errors.province && <p className="mt-1 text-sm text-danger">{errors.province}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink mb-1">
                     Postal Code *
                   </label>
                   <input
@@ -303,11 +303,11 @@ export default function Profile() {
                     onChange={(e) => setFormData({...formData, postal_code: e.target.value})}
                     required
                     className={cn(
-                      'w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                      errors.postal_code ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                      errors.postal_code ? 'border-danger' : 'border-hairline'
                     )}
                   />
-                  {errors.postal_code && <p className="mt-1 text-sm text-red-500">{errors.postal_code}</p>}
+                  {errors.postal_code && <p className="mt-1 text-sm text-danger">{errors.postal_code}</p>}
                 </div>
               </div>
 
@@ -317,8 +317,8 @@ export default function Profile() {
                 disabled={isSubmitting}
                 className={cn(
                   'w-full py-3 px-6 rounded-lg font-semibold text-lg transition-all',
-                  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                  'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/25',
+                  'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2',
+                  'bg-accent text-accent-foreground hover:bg-accent-hover hover:shadow-soft',
                   'disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
               >
@@ -329,26 +329,26 @@ export default function Profile() {
         </div>
 
         {/* Account Actions */}
-        <div className="mt-8 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="mt-8 bg-surface rounded-2xl shadow-card border border-hairline p-6">
+          <h2 className="text-xl font-bold text-ink mb-4">
             Account Actions
           </h2>
           <div className="space-y-3">
-            <button className="w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium flex items-center justify-between">
+            <button className="w-full py-3 px-4 border border-hairline rounded-lg text-ink hover:bg-panel font-medium flex items-center justify-between">
               <span>Change Password</span>
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
-            <button className="w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium flex items-center justify-between">
+            <button className="w-full py-3 px-4 border border-hairline rounded-lg text-ink hover:bg-panel font-medium flex items-center justify-between">
               <span>Notification Preferences</span>
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
-            <button className="w-full py-3 px-4 border border-red-300 dark:border-red-600 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 font-medium flex items-center justify-between">
+            <button className="w-full py-3 px-4 border border-danger/40 rounded-lg text-danger hover:bg-danger-tint font-medium flex items-center justify-between">
               <span>Delete Account</span>
-              <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

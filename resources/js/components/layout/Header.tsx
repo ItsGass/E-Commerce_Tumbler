@@ -45,7 +45,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-page/90 backdrop-blur-md">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+      <nav className="container-page" aria-label="Main navigation">
         <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5" aria-label="Tumbler Shop Home">
@@ -112,7 +112,7 @@ export function Header() {
               </svg>
               <span className="hidden text-sm font-medium sm:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-bold text-accent-foreground">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 font-display text-xs leading-none font-bold text-accent-foreground">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}

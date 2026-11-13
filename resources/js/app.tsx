@@ -16,7 +16,7 @@ function syncAuthFromPage(page: Page): void {
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
   progress: {
-    color: '#4B5563',
+    color: '#B4492A',
   },
   setup({ el, App, props }) {
     syncAuthFromPage(props.initialPage);

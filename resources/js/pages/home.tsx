@@ -9,91 +9,113 @@ interface HomeProps {
   heroProducts?: HeroMarqueeProduct[];
 }
 
+const FEATURES = [
+  {
+    title: 'Demo checkout',
+    description: 'Orders are placed in demo mode. No real payment is collected or charged.',
+    tint: 'bg-tint-1',
+    icon: (
+      <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 8h6M9 12h6M9 16h3" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Live stock counts',
+    description: 'Cards, product pages and checkout all use the same inventory numbers.',
+    tint: 'bg-tint-2',
+    icon: (
+      <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3 3 7l9 4 9-4-9-4Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="m3 12 9 4 9-4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="m3 17 9 4 9-4" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Order tracking',
+    description: 'Every demo order gets a code and a tracking page at /track.',
+    tint: 'bg-tint-4',
+    icon: (
+      <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </svg>
+    ),
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    quote: 'The 3D view made it easy to pick a colour before ordering.',
+    location: 'Jakarta',
+  },
+  {
+    quote: 'I could see the stock count before checkout, so there were no surprises.',
+    location: 'Bandung',
+  },
+  {
+    quote: 'Tracking the demo order took one code and my email address.',
+    location: 'Surabaya',
+  },
+];
+
 export default function Home({ heroProducts = [] }: HomeProps) {
   const { data, isLoading } = useProducts({ per_page: 4 });
+  const firstProductSlug = heroProducts[0]?.slug;
+  const try3dHref = firstProductSlug ? `/products/${firstProductSlug}` : '/products';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
-            <div className="max-w-xl min-w-0">
-              <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 leading-tight">
-                Premium Tumblers for Every Adventure
-              </h1>
-              <p className="text-lg lg:text-xl text-primary-100 mb-8">
-                Discover our collection of handcrafted tumblers designed to keep your drinks at the perfect temperature. Quality materials, sustainable design, exceptional insulation.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/products"
-                  className="inline-flex items-center px-8 py-4 bg-white text-primary-700 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
-                >
-                  Shop Now
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-                <Link
-                  href="/products"
-                  className="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white/10 transition-colors"
-                >
-                  View Collection
-                </Link>
+    <div className="min-h-screen bg-page">
+      {/* Hero: one warm card inside the shared page container. */}
+      <section className="pt-6 pb-8 sm:pt-10 lg:pb-10">
+        <div className="container-page">
+          <div className="relative overflow-hidden rounded-panel bg-gradient-to-r from-panel via-panel to-blush">
+            <div className="grid items-center gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-4 lg:py-14 lg:pr-0 lg:pl-14">
+              <div className="max-w-xl">
+                <p className="eyebrow">Teman minum sepanjang hari</p>
+                <h1 className="mt-4 text-ink">
+                  Tumbler yang menemanimu{' '}
+                  <em className="font-display italic text-accent">sepanjang hari</em>
+                </h1>
+                <p className="mt-5 max-w-md text-lg text-muted">
+                  Foto asli, stok yang jujur, dan pratinjau 3D sebelum memilih warna.
+                  Semua alurnya bisa dicoba sampai checkout demo.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Link href="/products" className="btn btn-primary">
+                    Lihat koleksi
+                  </Link>
+                  <Link href={try3dHref} className="btn btn-ghost">
+                    Coba 3D
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
               </div>
-            </div>
 
-            <div className="relative min-w-0">
-              <HeroMarquee products={heroProducts} />
+              <div className="min-w-0 lg:-mr-6">
+                <HeroMarquee products={heroProducts} />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H7a2 2 0 00-2 2v6l-1 1h16l-1-1V9z" />
-                  </svg>
-                ),
-                title: 'Demo checkout',
-                description: 'Orders are placed in demo mode. No real payment is collected or charged.',
-              },
-              {
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                ),
-                title: 'Live stock counts',
-                description: 'Cards, product pages and checkout all use the same inventory numbers.',
-              },
-              {
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                ),
-                title: 'Order tracking',
-                description: 'Every demo order gets a code and a tracking page at /track.',
-              },
-            ].map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+      <section className="py-8 lg:py-10">
+        <div className="container-page">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 lg:gap-6">
+            {FEATURES.map((feature) => (
+              <div
+                key={feature.title}
+                className="rounded-card border border-hairline bg-surface p-6 shadow-card sm:p-7"
+              >
+                <div className={`inline-flex h-14 w-14 items-center justify-center rounded-full ${feature.tint} text-ink`}>
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {feature.description}
-                </p>
+                <h3 className="mt-5 text-xl text-ink">{feature.title}</h3>
+                <p className="mt-2 text-sm text-muted">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -101,40 +123,36 @@ export default function Home({ heroProducts = [] }: HomeProps) {
       </section>
 
       {/* Featured Products */}
-      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <section className="py-8 lg:py-10">
+        <div className="container-page">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Featured Products
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                A sample of the demo catalog
-              </p>
+              <h2 className="text-ink">Featured Products</h2>
+              <p className="mt-2 text-muted">A sample of the demo catalog</p>
             </div>
             <Link
               href="/products"
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+              className="inline-flex items-center gap-1.5 rounded-full text-sm font-medium text-accent transition-colors hover:text-accent-hover"
             >
               View All
-              <svg className="w-4 h-4 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[4/5] bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                <div key={i} className="animate-pulse rounded-card bg-surface p-3 shadow-card">
+                  <div className="mb-4 aspect-[4/5] rounded-tile bg-panel" />
+                  <div className="mb-2 h-4 w-3/4 rounded-full bg-panel" />
+                  <div className="h-4 w-1/2 rounded-full bg-panel" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {data?.data.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -148,81 +166,57 @@ export default function Home({ heroProducts = [] }: HomeProps) {
       </section>
 
       {/* Sample testimonials */}
-      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-8 lg:py-10">
+        <div className="container-page">
           <div className="mb-8 flex flex-wrap items-center gap-3">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              What customers say
-            </h2>
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold tracking-wide text-amber-900 uppercase dark:bg-amber-400/20 dark:text-amber-300">
+            <h2 className="text-ink">What customers say</h2>
+            <span className="badge badge-warning uppercase tracking-wide">
               Sample content — demo only
             </span>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[
-              {
-                quote: 'The 3D view made it easy to pick a colour before ordering.',
-                name: 'Sample customer',
-                location: 'Jakarta',
-              },
-              {
-                quote: 'I could see the stock count before checkout, so there were no surprises.',
-                name: 'Sample customer',
-                location: 'Bandung',
-              },
-              {
-                quote: 'Tracking the demo order took one code and my email address.',
-                name: 'Sample customer',
-                location: 'Surabaya',
-              },
-            ].map((testimonial) => (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 lg:gap-6">
+            {TESTIMONIALS.map((testimonial) => (
               <figure
                 key={testimonial.quote}
-                className="rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-900"
+                className="rounded-card border border-hairline bg-surface p-6 shadow-card"
               >
-                <blockquote className="text-gray-700 dark:text-gray-300">
-                  “{testimonial.quote}”
-                </blockquote>
+                <blockquote className="text-ink">“{testimonial.quote}”</blockquote>
                 <figcaption className="mt-4 flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-panel text-sm font-semibold text-accent">
                     SC
                   </span>
                   <span>
-                    <span className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {testimonial.name}
-                    </span>
-                    <span className="block text-sm text-gray-500 dark:text-gray-400">
-                      {testimonial.location}
-                    </span>
+                    <span className="block text-sm font-semibold text-ink">Sample customer</span>
+                    <span className="block text-sm text-muted">{testimonial.location}</span>
                   </span>
                 </figcaption>
               </figure>
             ))}
           </div>
-          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-6 text-sm text-muted">
             These quotes are sample copy for this demo and are not real customer reviews.
           </p>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Ready to Find Your Perfect Tumbler?
-          </h2>
-          <p className="text-lg text-primary-100 mb-8 max-w-xl mx-auto">
-            Explore the demo catalog and place a sample order to see the whole checkout flow.
-          </p>
-          <Link
-            href="/products"
-            className="inline-flex items-center px-8 py-4 bg-white text-primary-700 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
-          >
-            Shop Collection
-            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
+      {/* CTA band */}
+      <section className="bg-accent py-12 text-accent-foreground lg:py-16">
+        <div className="container-page">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-accent-foreground">Ready to Find Your Perfect Tumbler?</h2>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-accent-foreground/85">
+              Explore the demo catalog and place a sample order to see the whole checkout flow.
+            </p>
+            <Link
+              href="/products"
+              className="btn btn-secondary mt-8"
+            >
+              Shop Collection
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

@@ -29,22 +29,22 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       return (
         <div
           role="alert"
-          className="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-950"
+          className="flex min-h-screen items-center justify-center bg-page px-4"
         >
-          <div className="w-full max-w-md rounded-xl border border-red-200 bg-white p-6 shadow-sm dark:border-red-900 dark:bg-gray-900">
-            <h1 className="text-lg font-semibold text-red-700 dark:text-red-400">
+          <div className="w-full max-w-md rounded-xl border border-danger/30 bg-surface p-6 shadow-card">
+            <h1 className="text-lg font-semibold text-danger">
               Something went wrong
             </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-muted">
               The page failed to render. Reload to try again.
             </p>
-            <pre className="mt-4 max-h-40 overflow-auto whitespace-pre-wrap rounded bg-gray-100 p-3 text-xs text-red-700 dark:bg-gray-800 dark:text-red-400">
+            <pre className="mt-4 max-h-40 overflow-auto whitespace-pre-wrap rounded bg-panel p-3 text-xs text-danger">
               {this.state.error.message}
             </pre>
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              className="mt-4 rounded-lg bg-danger px-4 py-2 text-sm font-medium text-page hover:bg-danger/85"
             >
               Reload page
             </button>

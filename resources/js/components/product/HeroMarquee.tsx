@@ -23,6 +23,13 @@ const MIN_CARDS_PER_COLUMN = 4;
 const DIRECTIONS = ['up', 'down', 'up'] as const;
 const DURATIONS = ['34s', '42s', '38s'] as const;
 const COLUMN_OFFSETS = [0, 2, 4] as const;
+const TINTS = [
+  'var(--warm-panel)',
+  'var(--warm-tint-4)',
+  'var(--warm-blush)',
+  'var(--warm-tint-1)',
+  'var(--warm-tint-4)',
+] as const;
 
 function formatPrice(price: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -57,26 +64,34 @@ function MarqueeCard({
   product,
   eager,
   duplicate = false,
+  tintIndex = 0,
 }: {
   product: HeroMarqueeProduct;
   eager: boolean;
   duplicate?: boolean;
+  tintIndex?: number;
 }) {
   return (
     <Link
       href={`/products/${product.slug}`}
       className="hero-marquee__card group"
+      style={{ '--marquee-tint': TINTS[tintIndex % TINTS.length] } as CSSProperties}
       aria-label={`View ${product.name}`}
       aria-hidden={duplicate ? true : undefined}
       tabIndex={duplicate ? -1 : undefined}
     >
-      <ProductImage
-        src={product.image}
-        alt={product.name}
-        className="transition-transform duration-300 group-hover:scale-105"
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-      />
+      <span className="hero-marquee__frame">
+        <span className="hero-marquee__image">
+          <ProductImage
+            src={product.image}
+            alt={product.name}
+            className="transition-transform duration-300 group-hover:scale-105"
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+          <span className="hero-marquee__wash" aria-hidden="true" />
+        </span>
+      </span>
       <span className="hero-marquee__caption">
         <span className="hero-marquee__name">{product.name}</span>
         <span className="hero-marquee__price">{formatPrice(product.price)}</span>
@@ -141,6 +156,7 @@ export function HeroMarquee({ products, className }: HeroMarqueeProps) {
                 product={product}
                 eager={index < 2 || (index >= column.items.length && index < column.items.length + 2)}
                 duplicate={index >= column.items.length}
+                tintIndex={index + columnIndex}
               />
             ))}
           </div>
@@ -153,6 +169,7 @@ export function HeroMarquee({ products, className }: HeroMarqueeProps) {
             key={`static-${index}-${product.id}`}
             product={product}
             eager={index < 2}
+            tintIndex={index}
           />
         ))}
       </div>

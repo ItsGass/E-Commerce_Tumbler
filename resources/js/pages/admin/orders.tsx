@@ -43,12 +43,12 @@ interface OrdersResponse {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  paid: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  processing: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-  shipped: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-  completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  pending: 'bg-warning-tint text-warning',
+  paid: 'bg-tint-5 text-accent',
+  processing: 'bg-tint-3 text-accent',
+  shipped: 'bg-tint-3 text-accent',
+  completed: 'bg-success-tint text-success',
+  cancelled: 'bg-danger-tint text-danger',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -124,19 +124,19 @@ function AdminOrdersContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-page py-8">
+      <div className="container-page">
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-ink mb-2">
             Order Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted">
             View and manage customer orders
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+        <div className="bg-surface rounded-xl shadow-card border border-hairline p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1 max-w-md">
               <input
@@ -147,9 +147,9 @@ function AdminOrdersContent() {
                   setPage(1);
                 }}
                 placeholder="Search by code, name, email..."
-                className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 pl-10 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
               />
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -159,7 +159,7 @@ function AdminOrdersContent() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
@@ -173,7 +173,7 @@ function AdminOrdersContent() {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-surface rounded-xl shadow-card border border-hairline overflow-hidden">
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
@@ -182,36 +182,36 @@ function AdminOrdersContent() {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
+                  <thead className="bg-panel">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Items</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider pr-6">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Order</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Items</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Total</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider pr-6">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="divide-y divide-hairline">
                     {data?.data.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <tr key={order.id} className="hover:bg-panel">
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-mono font-medium text-gray-900 dark:text-gray-100">
+                            <p className="font-mono font-medium text-ink">
                               {order.code}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-muted">
                               {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                             </p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                            <p className="font-medium text-ink">
                               {order.buyer.name}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-sm text-muted">
                               {order.buyer.email}
                             </p>
                           </div>
@@ -219,16 +219,16 @@ function AdminOrdersContent() {
                         <td className="px-6 py-4">
                           <div className="space-y-1 max-h-24 overflow-y-auto">
                             {order.items.map((item) => (
-                              <div key={item.id} className="text-sm text-gray-600 dark:text-gray-400 flex gap-2">
+                              <div key={item.id} className="text-sm text-muted flex gap-2">
                                 <span className="font-medium">{item.product_name}</span>
-                                <span className="text-gray-400">×{item.quantity}</span>
+                                <span className="text-muted">×{item.quantity}</span>
                                 <span>{formatPrice(item.unit_price)}</span>
                               </div>
                             ))}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="font-semibold text-gray-900 dark:text-gray-100">
+                          <span className="font-semibold text-ink">
                             {formatPrice(order.total)}
                           </span>
                         </td>
@@ -240,7 +240,7 @@ function AdminOrdersContent() {
                             {STATUS_LABELS[order.status] || order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                           {new Date(order.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right pr-6">
@@ -250,8 +250,8 @@ function AdminOrdersContent() {
                               onChange={(e) => handleStatusChange(order, e.target.value)}
                               disabled={updateStatusMutation.isPending || allowedNextStatuses(order.status).length === 0}
                               className={cn(
-                                'px-2 py-1 border rounded-lg text-sm font-medium bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500',
-                                'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300',
+                                'px-2 py-1 border rounded-lg text-sm font-medium bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                                'border-hairline text-ink',
                                 'disabled:opacity-50 disabled:cursor-not-allowed'
                               )}
                             >
@@ -265,14 +265,14 @@ function AdminOrdersContent() {
                               <button
                                 onClick={() => markPaidMutation.mutate(order.id)}
                                 disabled={markPaidMutation.isPending}
-                                className="px-2 py-1 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 disabled:opacity-50"
+                                className="px-2 py-1 bg-success text-page rounded-lg text-xs font-medium hover:bg-success/85 disabled:opacity-50"
                               >
                                 Mark Paid
                               </button>
                             )}
                             <button
                               onClick={() => setSelectedOrder(order)}
-                              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 text-sm font-medium"
+                              className="text-accent hover:text-accent text-sm font-medium"
                             >
                               View
                             </button>
@@ -282,7 +282,7 @@ function AdminOrdersContent() {
                     ))}
                     {!data?.data.length && (
                       <tr>
-                        <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                        <td colSpan={7} className="px-6 py-12 text-center text-muted">
                           No orders found.
                         </td>
                       </tr>
@@ -293,22 +293,22 @@ function AdminOrdersContent() {
 
               {/* Pagination */}
               {data && data.meta.last_page > 1 && (
-                <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                <div className="px-6 py-4 border-t border-hairline flex items-center justify-between">
+                  <p className="text-sm text-ink">
                     Showing {data.meta.per_page * (data.meta.current_page - 1) + 1} to {Math.min(data.meta.per_page * data.meta.current_page, data.meta.total)} of {data.meta.total}
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={data.meta.current_page === 1 || isFetching}
-                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+                      className="px-3 py-1 border border-hairline rounded-lg text-sm text-ink hover:bg-panel disabled:opacity-50"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setPage(p => Math.min(data.meta.last_page, p + 1))}
                       disabled={data.meta.current_page === data.meta.last_page || isFetching}
-                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+                      className="px-3 py-1 border border-hairline rounded-lg text-sm text-ink hover:bg-panel disabled:opacity-50"
                     >
                       Next
                     </button>
@@ -322,14 +322,14 @@ function AdminOrdersContent() {
         {/* Order Detail Modal */}
         {selectedOrder && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            <div className="bg-surface rounded-xl shadow-soft max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-hairline flex items-center justify-between">
+                <h2 className="text-xl font-bold text-ink">
                   Order {selectedOrder.code}
                 </h2>
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="text-muted hover:text-ink"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -339,7 +339,7 @@ function AdminOrdersContent() {
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                    <p className="text-sm text-muted">Status</p>
                     <p className={cn(
                       'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium mt-1',
                       STATUS_COLORS[selectedOrder.status]
@@ -348,32 +348,32 @@ function AdminOrdersContent() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
-                    <p className="font-bold text-lg text-gray-900 dark:text-gray-100 mt-1">
+                    <p className="text-sm text-muted">Total</p>
+                    <p className="font-bold text-lg text-ink mt-1">
                       {formatPrice(selectedOrder.total)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Customer</p>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedOrder.buyer.email}</p>
+                    <p className="text-sm text-muted">Customer</p>
+                    <p className="mt-1 text-ink">{selectedOrder.buyer.name}</p>
+                    <p className="text-sm text-muted">{selectedOrder.buyer.email}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{selectedOrder.buyer.phone}</p>
+                    <p className="text-sm text-muted">Phone</p>
+                    <p className="mt-1 text-ink">{selectedOrder.buyer.phone}</p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Items</h3>
+                  <h3 className="font-bold text-ink mb-3">Items</h3>
                   <div className="space-y-2">
                     {selectedOrder.items.map((item) => (
-                      <div key={item.id} className="flex gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={item.id} className="flex gap-4 p-3 bg-panel rounded-lg">
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900 dark:text-gray-100">{item.product_name}</p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">Qty: {item.quantity} × {formatPrice(item.unit_price)}</p>
+                          <p className="font-medium text-ink">{item.product_name}</p>
+                          <p className="text-sm text-muted">Qty: {item.quantity} × {formatPrice(item.unit_price)}</p>
                         </div>
-                        <p className="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                        <p className="font-semibold text-ink whitespace-nowrap">
                           {formatPrice(item.unit_price * item.quantity)}
                         </p>
                       </div>

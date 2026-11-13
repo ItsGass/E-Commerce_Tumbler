@@ -28,8 +28,8 @@ const ViewerInner = lazy(() =>
 
 function ViewerSkeleton() {
   return (
-    <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-primary-600 dark:border-primary-400 border-t-transparent rounded-full animate-spin" />
+    <div className="absolute inset-0 bg-panel animate-pulse flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }
@@ -54,7 +54,7 @@ function FallbackImage({
   className?: string;
 }) {
   return (
-    <div className={cn('relative aspect-square w-full bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden flex items-center justify-center', className)}>
+    <div className={cn('relative aspect-square w-full bg-panel rounded-xl overflow-hidden flex items-center justify-center', className)}>
       {src ? (
         <img 
           src={src} 
@@ -62,7 +62,7 @@ function FallbackImage({
           className="w-full h-full object-cover"
         />
       ) : (
-        <div className="text-center p-4 text-gray-500 dark:text-gray-400">
+        <div className="text-center p-4 text-muted">
           <svg className="w-16 h-16 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -115,7 +115,7 @@ export function ProductViewer3D({
   }
 
   return (
-    <div className={cn('relative aspect-square w-full bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden', className)}>
+    <div className={cn('relative aspect-square w-full bg-panel rounded-xl overflow-hidden', className)}>
       <Suspense fallback={<ViewerSkeleton />}>
         <ViewerInner
           glbUrl={glbUrl}
@@ -139,7 +139,7 @@ export function ProductViewer3D({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-2 p-3">
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-900/5 backdrop-blur transition-opacity duration-300 dark:bg-gray-900/80 dark:text-gray-300 dark:ring-white/10',
+            'inline-flex items-center gap-1.5 rounded-full bg-surface/80 px-2.5 py-1.5 text-xs font-medium text-muted ring-1 ring-ink/10 backdrop-blur transition-opacity duration-300',
             hasInteracted ? 'opacity-0' : 'opacity-100'
           )}
           aria-hidden={hasInteracted}
@@ -150,7 +150,7 @@ export function ProductViewer3D({
           Drag to rotate
         </span>
 
-        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/90 p-1 shadow-sm ring-1 ring-gray-900/5 backdrop-blur dark:bg-gray-900/90 dark:ring-white/10">
+        <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-surface/90 p-1 shadow-card ring-1 ring-ink/10 backdrop-blur">
           <button
             type="button"
             onClick={() => setAutoRotate((value) => !value)}
@@ -159,10 +159,10 @@ export function ProductViewer3D({
             title={autoRotate ? 'Stop auto-rotation' : 'Start auto-rotation'}
             className={cn(
               'inline-flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full transition-colors',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-offset-page',
               autoRotate
-                ? 'bg-primary-600 text-white hover:bg-primary-700'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+                ? 'bg-accent text-accent-foreground hover:bg-accent-hover'
+                : 'text-muted hover:bg-panel hover:text-accent dark:text-muted hover:text-ink'
             )}
           >
             {autoRotate ? (
@@ -183,9 +183,9 @@ export function ProductViewer3D({
             aria-label="Reset view"
             title="Reset view"
             className={cn(
-              'inline-flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full text-gray-600 transition-colors',
-              'hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900'
+              'inline-flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full text-muted transition-colors',
+              'hover:bg-panel hover:text-accent dark:text-muted hover:text-ink',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-offset-page'
             )}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">

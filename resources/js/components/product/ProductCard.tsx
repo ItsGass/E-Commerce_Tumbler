@@ -18,6 +18,8 @@ interface ProductCardProps {
   onAddToCart: (product: ProductCardProps['product']) => void;
 }
 
+const TILE_TINTS = ['bg-tint-1', 'bg-tint-2', 'bg-tint-4', 'bg-tint-5', 'bg-tint-3'];
+
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -31,16 +33,17 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     (product.default_variant?.color_hex ? [product.default_variant.color_hex] : ['#1a1a1a']);
   const soldOut = typeof product.stock === 'number' && product.stock <= 0;
   const lowStock = typeof product.stock === 'number' && product.stock > 0 && product.stock < 5;
+  const tileTint = TILE_TINTS[Math.abs(product.id) % TILE_TINTS.length];
 
   return (
-    <article className={cn('group relative bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-card border border-gray-200 dark:border-gray-700 transition-all hover:shadow-lift')}>
+    <article className={cn('group relative rounded-card bg-surface p-3.5 shadow-card transition-shadow hover:shadow-soft')}>
       {/* Product Image */}
       <Link
         href={`/products/${product.slug}`}
         className="block"
         aria-label={`View ${product.name}`}
       >
-        <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div className={cn('relative aspect-[4/5] overflow-hidden rounded-tile', tileTint)}>
           <ProductImage
             src={product.thumbnail?.url}
             alt={product.name}
@@ -48,23 +51,23 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           />
 
           {soldOut && (
-            <span className="absolute top-2 left-2 rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+            <span className="badge badge-danger absolute top-2.5 left-2.5">
               Sold out
             </span>
           )}
           {lowStock && (
-            <span className="absolute top-2 left-2 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900 shadow-sm dark:bg-amber-400 dark:text-amber-950">
+            <span className="badge badge-warning absolute top-2.5 left-2.5">
               Only {product.stock} left
             </span>
           )}
 
           {/* Variant color indicators */}
           {variantColors.length > 1 && (
-            <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
+            <div className="absolute right-2.5 bottom-2.5 left-2.5 flex justify-center gap-1">
               {variantColors.map((color, i) => (
                 <span
                   key={i}
-                  className="w-5 h-5 rounded-full border-2 border-white/80 shadow-sm"
+                  className="h-5 w-5 rounded-full border-2 border-surface shadow-card"
                   style={{ backgroundColor: color }}
                   title={`Variant ${i + 1}`}
                 />
@@ -75,12 +78,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       </Link>
 
       {/* Product Info */}
-      <div className="p-4">
+      <div className="px-1 pt-4 pb-1">
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1 mb-1">
+          <h3 className="mb-1 line-clamp-1 font-sans text-base font-medium text-ink">
             {product.name}
           </h3>
-          <p className="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-3">
+          <p className="mb-3 font-display text-lg font-semibold text-accent">
             {formatPrice(product.price)}
           </p>
         </Link>
@@ -90,11 +93,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           onClick={() => onAddToCart(product)}
           disabled={soldOut}
           className={cn(
-            'w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900',
-            soldOut
-              ? 'bg-gray-200 text-gray-600 cursor-not-allowed dark:bg-gray-800 dark:text-gray-300'
-              : 'bg-primary-600 text-white hover:bg-primary-700'
+            'btn btn-primary w-full disabled:bg-panel disabled:text-muted disabled:shadow-none',
           )}
         >
           {soldOut ? 'Sold out' : 'Add to Cart'}

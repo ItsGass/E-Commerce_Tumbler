@@ -26,8 +26,8 @@ export function RequireAuth({ children, requireProfile = false }: RequireAuthPro
   // Show loading state while checking
   if (!isAuthenticated || (requireProfile && user && !user.profile_complete)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent" />
+      <div className="min-h-screen flex items-center justify-center bg-page">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent" />
       </div>
     );
   }

@@ -24,7 +24,7 @@ export function VariantSelector({
 
   return (
     <div className={cn('space-y-2', className)}>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-sm font-medium text-ink">
         Color / Finish
       </label>
       <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Product variants">
@@ -35,9 +35,9 @@ export function VariantSelector({
             onClick={() => onSelect(index)}
             className={cn(
               'relative w-11 h-11 rounded-full border-3 transition-all duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2',
               index === selectedIndex
-                ? 'border-primary-500 ring-2 ring-white dark:ring-gray-900'
+                ? 'border-accent ring-2 ring-surface'
                 : 'border-transparent opacity-70 hover:opacity-100 hover:scale-105'
             )}
             style={{
@@ -54,7 +54,7 @@ export function VariantSelector({
           />
         ))}
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-sm text-muted">
         {variants[selectedIndex]?.name}
       </p>
     </div>

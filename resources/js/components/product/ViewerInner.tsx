@@ -305,7 +305,7 @@ function ViewerContent({
       </Environment>
 
       <directionalLight position={[3, 4, 2]} intensity={1.4} />
-      <directionalLight position={[-3, 2, -2]} intensity={0.5} color="#bcd7d5" />
+      <directionalLight position={[-3, 2, -2]} intensity={0.5} color="#e0b49c" />
 
       <SoftShadow />
 

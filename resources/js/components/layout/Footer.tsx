@@ -51,7 +51,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-hairline bg-panel">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+      <div className="container-page py-14 lg:py-20">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="lg:col-span-2">
