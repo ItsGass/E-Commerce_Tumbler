@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   const { isOpen } = useCartStore();
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen flex-col bg-page text-ink">
       <Header />
       <main className="flex-1">
         {children}

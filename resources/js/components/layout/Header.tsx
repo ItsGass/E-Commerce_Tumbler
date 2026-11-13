@@ -31,96 +31,88 @@ export function Header() {
   const isAdmin = user?.abilities?.can_admin || false;
   const isSuperAdmin = user?.abilities?.can_super_admin || false;
 
+  const navLinkClass = (active: boolean) =>
+    cn(
+      'rounded-full px-1 py-2 text-sm font-medium transition-colors',
+      active ? 'text-accent' : 'text-muted hover:text-ink',
+    );
+
+  const mobileLinkClass = (active: boolean) =>
+    cn(
+      'block rounded-full px-4 py-3 text-base font-medium transition-colors',
+      active ? 'bg-panel text-accent' : 'text-ink hover:bg-panel',
+    );
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+    <header className="sticky top-0 z-40 border-b border-hairline bg-page/90 backdrop-blur-md">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+        <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Tumbler Shop Home">
-            <svg className="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 32 32">
-              <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z"/>
-            </svg>
-            <span className="text-xl font-bold text-gray-900 dark:text-gray-100 hidden sm:block">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Tumbler Shop Home">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z" />
+              </svg>
+            </span>
+            <span className="font-display text-xl font-semibold tracking-tight text-ink lg:text-2xl">
               Tumbler Shop
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
-            <Link 
-              href="/products" 
-              className={cn(
-                'text-sm font-medium transition-colors',
-                page.url.startsWith('/products') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
-              )}
-            >
+          <div className="hidden items-center gap-8 lg:flex">
+            <Link href="/products" className={navLinkClass(page.url.startsWith('/products'))}>
               Products
             </Link>
             {isAuthenticated && (
-              <Link 
-                href="/orders" 
-                className={cn(
-                  'text-sm font-medium transition-colors',
-                  page.url.startsWith('/orders') 
-                    ? 'text-primary-600' 
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
-                )}
-              >
+              <Link href="/orders" className={navLinkClass(page.url.startsWith('/orders'))}>
                 My Orders
               </Link>
             )}
             {(isAdmin || isSuperAdmin) && (
-              <Link 
-                href="/admin" 
-                className={cn(
-                  'text-sm font-medium transition-colors',
-                  page.url.startsWith('/admin') 
-                    ? 'text-primary-600' 
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
-                )}
-              >
+              <Link href="/admin" className={navLinkClass(page.url.startsWith('/admin'))}>
                 Admin
               </Link>
             )}
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Mobile menu toggle: the desktop nav is hidden below lg, and
                 without this the only routes were Products (via the logo) and
                 whatever the user menu happened to expose. */}
             <button
               type="button"
               onClick={() => setIsNavOpen((open) => !open)}
-              className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:bg-panel lg:hidden"
               aria-label={isNavOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isNavOpen}
               aria-controls="mobile-menu"
             >
               {isNavOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
                 </svg>
               )}
             </button>
 
-            {/* Cart Button */}
+            {/* Cart pill */}
             <button
+              type="button"
               onClick={toggleDrawer}
-              className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="relative inline-flex h-11 items-center gap-2 rounded-full border border-hairline bg-surface px-3 text-ink transition-colors hover:border-accent hover:text-accent sm:px-4"
               aria-label={`Shopping cart${cartCount > 0 ? ` with ${cartCount} items` : ' empty'}`}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
+              <span className="hidden text-sm font-medium sm:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-bold text-accent-foreground">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -131,50 +123,53 @@ export function Header() {
               <div className="relative">
                 <button
                   id="user-menu-button"
+                  type="button"
                   onClick={() => setIsMenuOpen((open) => !open)}
-                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="flex min-h-11 items-center gap-2 rounded-full p-1 pr-2 transition-colors hover:bg-panel"
                   aria-expanded={isMenuOpen}
                   aria-haspopup="true"
                   aria-controls="user-menu-dropdown"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                    <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-panel">
+                    <span className="font-display text-sm font-semibold text-accent">
                       {user.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
-                  </div>
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  </span>
+                  <svg className="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {/* Dropdown Menu */}
-                <div 
+                <div
                   id="user-menu-dropdown"
                   className={cn(
-                    'absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 transform transition-all duration-200 z-50',
-                    isMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
+                    'absolute right-0 z-50 mt-2 w-56 rounded-2xl border border-hairline bg-surface py-1 shadow-soft transition-all duration-200',
+                    isMenuOpen ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-2 opacity-0',
                   )}
                   role="menu"
                 >
-                  <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-                    <span className={cn(
-                      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1',
-                      user.role === 'super_admin' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-                      user.role === 'admin' && 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-                      user.role === 'user' && 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-                    )}>
+                  <div className="border-b border-hairline px-4 py-3">
+                    <p className="text-sm font-medium text-ink">{user.name}</p>
+                    <p className="truncate text-xs text-muted">{user.email}</p>
+                    <span
+                      className={cn(
+                        'badge mt-2 capitalize',
+                        user.role === 'super_admin' && 'badge-danger',
+                        user.role === 'admin' && 'badge-accent',
+                        user.role === 'user' && 'badge-success',
+                      )}
+                    >
                       {user.role.replace('_', ' ')}
                     </span>
                   </div>
                   <Link
                     href="/profile"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="block px-4 py-2.5 text-sm text-ink transition-colors hover:bg-panel"
                     role="menuitem"
                   >
-                    <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Profile
@@ -182,10 +177,10 @@ export function Header() {
                   <Link
                     href="/orders"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="block px-4 py-2.5 text-sm text-ink transition-colors hover:bg-panel"
                     role="menuitem"
                   >
-                    <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     My Orders
@@ -194,23 +189,24 @@ export function Header() {
                     <Link
                       href="/admin"
                       onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-4 py-2.5 text-sm text-ink transition-colors hover:bg-panel"
                       role="menuitem"
                     >
-                      <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                       </svg>
                       Admin Dashboard
                     </Link>
                   )}
-                  <hr className="my-1 border-gray-200 dark:border-gray-700" />
+                  <hr className="my-1 border-hairline" />
                   <button
+                    type="button"
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+                    className="w-full px-4 py-2.5 text-left text-sm text-danger transition-colors hover:bg-danger-tint disabled:opacity-50"
                     role="menuitem"
                   >
-                    <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mr-2 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     Sign Out
@@ -218,17 +214,11 @@ export function Header() {
                 </div>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                >
+              <div className="hidden items-center gap-4 lg:flex">
+                <Link href="/login" className="text-sm font-medium text-muted transition-colors hover:text-ink">
                   Sign In
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-                >
+                <Link href="/register" className="btn btn-primary btn-sm">
                   Get Started
                 </Link>
               </div>
@@ -240,21 +230,13 @@ export function Header() {
             resolves to a real element. */}
         <div
           id="mobile-menu"
-          className={cn(
-            'border-t border-gray-200 dark:border-gray-800 lg:hidden',
-            isNavOpen ? 'block' : 'hidden'
-          )}
+          className={cn('border-t border-hairline pb-4 lg:hidden', isNavOpen ? 'block' : 'hidden')}
         >
-          <div className="space-y-1 py-3">
+          <div className="space-y-1 pt-3">
             <Link
               href="/products"
               onClick={closeNav}
-              className={cn(
-                'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
-                page.url.startsWith('/products')
-                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-              )}
+              className={mobileLinkClass(page.url.startsWith('/products'))}
             >
               Products
             </Link>
@@ -262,12 +244,7 @@ export function Header() {
               <Link
                 href="/orders"
                 onClick={closeNav}
-                className={cn(
-                  'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
-                  page.url.startsWith('/orders')
-                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                )}
+                className={mobileLinkClass(page.url.startsWith('/orders'))}
               >
                 My Orders
               </Link>
@@ -276,12 +253,7 @@ export function Header() {
               <Link
                 href="/admin"
                 onClick={closeNav}
-                className={cn(
-                  'block rounded-lg px-3 py-3 text-base font-medium transition-colors',
-                  page.url.startsWith('/admin')
-                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                )}
+                className={mobileLinkClass(page.url.startsWith('/admin'))}
               >
                 Admin
               </Link>
@@ -289,18 +261,14 @@ export function Header() {
 
             {isAuthenticated ? (
               <>
-                <Link
-                  href="/profile"
-                  onClick={closeNav}
-                  className="block rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                >
+                <Link href="/profile" onClick={closeNav} className={mobileLinkClass(page.url.startsWith('/profile'))}>
                   Profile
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="block w-full rounded-lg px-3 py-3 text-left text-base font-medium text-red-600 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:text-red-400 dark:hover:bg-gray-800"
+                  className="block w-full rounded-full px-4 py-3 text-left text-base font-medium text-danger transition-colors hover:bg-danger-tint disabled:opacity-50"
                 >
                   Sign Out
                 </button>
@@ -310,15 +278,11 @@ export function Header() {
                 <Link
                   href="/login"
                   onClick={closeNav}
-                  className="rounded-lg border border-gray-300 px-3 py-3 text-center text-base font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="btn btn-outline w-full"
                 >
                   Sign In
                 </Link>
-                <Link
-                  href="/register"
-                  onClick={closeNav}
-                  className="rounded-lg bg-primary-600 px-3 py-3 text-center text-base font-medium text-white transition-colors hover:bg-primary-700"
-                >
+                <Link href="/register" onClick={closeNav} className="btn btn-primary w-full">
                   Get Started
                 </Link>
               </div>

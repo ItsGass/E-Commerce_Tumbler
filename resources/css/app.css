@@ -3,43 +3,184 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
-@theme {
+/*
+ * Warm Cafe design tokens.
+ *
+ * Every surface, text colour and border below is a CSS variable so light and
+ * dark mode are defined in exactly one place. Components use the semantic
+ * Tailwind utilities (bg-page, text-ink, border-hairline, ...) that are
+ * mapped from these variables in `@theme inline`.
+ *
+ * To change the palette, edit the variable blocks here only.
+ */
+:root {
+    color-scheme: light;
+
+    --warm-page: #fbf3e8;
+    --warm-surface: #ffffff;
+    --warm-panel: #f3e3ce;
+    --warm-blush: #e9b8a0;
+
+    --warm-ink: #2b1d16;
+    --warm-muted: #6b564a;
+
+    --warm-accent: #b4492a;
+    --warm-accent-hover: #9a3b20;
+    --warm-accent-foreground: #ffffff;
+
+    --warm-hairline: #e8d8c3;
+
+    --warm-tint-1: #f3e3ce;
+    --warm-tint-2: #dce6d8;
+    --warm-tint-3: #e8ddf0;
+    --warm-tint-4: #f6e7b8;
+    --warm-tint-5: #cfe0ec;
+
+    --warm-success: #2f6b4f;
+    --warm-success-tint: #e1efe6;
+    --warm-warning: #8a5a00;
+    --warm-warning-tint: #fbe9c0;
+    --warm-danger: #a32d2d;
+    --warm-danger-tint: #f7dad5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+
+        --warm-page: #1e1611;
+        --warm-surface: #2a201a;
+        --warm-panel: #33271f;
+        --warm-blush: #4a2a20;
+
+        --warm-ink: #f6eadb;
+        --warm-muted: #c4ae9d;
+
+        --warm-accent: #e07a57;
+        --warm-accent-hover: #f08f6d;
+        --warm-accent-foreground: #2b1d16;
+
+        --warm-hairline: #43352b;
+
+        --warm-tint-1: #3a2b22;
+        --warm-tint-2: #2e362b;
+        --warm-tint-3: #352c3c;
+        --warm-tint-4: #3a3324;
+        --warm-tint-5: #26333b;
+
+        --warm-success: #7fc9a5;
+        --warm-success-tint: #23372c;
+        --warm-warning: #f2c879;
+        --warm-warning-tint: #3d3220;
+        --warm-danger: #f09a8f;
+        --warm-danger-tint: #3d2420;
+    }
+}
+
+@theme inline {
+    --color-page: var(--warm-page);
+    --color-surface: var(--warm-surface);
+    --color-panel: var(--warm-panel);
+    --color-blush: var(--warm-blush);
+    --color-ink: var(--warm-ink);
+    --color-muted: var(--warm-muted);
+    --color-accent: var(--warm-accent);
+    --color-accent-hover: var(--warm-accent-hover);
+    --color-accent-foreground: var(--warm-accent-foreground);
+    --color-hairline: var(--warm-hairline);
+
+    --color-tint-1: var(--warm-tint-1);
+    --color-tint-2: var(--warm-tint-2);
+    --color-tint-3: var(--warm-tint-3);
+    --color-tint-4: var(--warm-tint-4);
+    --color-tint-5: var(--warm-tint-5);
+
+    --color-success: var(--warm-success);
+    --color-success-tint: var(--warm-success-tint);
+    --color-warning: var(--warm-warning);
+    --color-warning-tint: var(--warm-warning-tint);
+    --color-danger: var(--warm-danger);
+    --color-danger-tint: var(--warm-danger-tint);
+
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'DM Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
 
-    /* Brand palette: cool teal-steel. `primary-600` is the CTA colour and
-       keeps a 5.9:1 contrast ratio with white text. */
-    --color-primary-50: #eff8f7;
-    --color-primary-100: #d7eeec;
-    --color-primary-200: #b0dcd8;
-    --color-primary-300: #7fc4bf;
-    --color-primary-400: #4ba7a1;
-    --color-primary-500: #2a8b85;
-    --color-primary-600: #1b6f6b;
-    --color-primary-700: #175a57;
-    --color-primary-800: #144a47;
-    --color-primary-900: #123d3b;
+    /* Brand ramp kept for legacy `primary-*` utilities. `primary-600` is the
+       terracotta CTA colour and keeps 5.35:1 against white text. */
+    --color-primary-50: #fbede7;
+    --color-primary-100: #f6dccf;
+    --color-primary-200: #edbea8;
+    --color-primary-300: #df9a7c;
+    --color-primary-400: #ce7a58;
+    --color-primary-500: #c05e3b;
+    --color-primary-600: #b4492a;
+    --color-primary-700: #9a3b20;
+    --color-primary-800: #7a2f1a;
+    --color-primary-900: #5c2414;
 
-    /* Surfaces and elevation. Two shadows only: resting card, hover lift. */
-    --shadow-card: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.1);
-    --shadow-lift: 0 12px 24px -12px rgb(16 24 40 / 0.25);
+    /* Soft elevation only: resting card and hover lift. */
+    --shadow-card: 0 1px 2px rgb(43 29 22 / 0.05), 0 2px 6px rgb(43 29 22 / 0.05);
+    --shadow-soft: 0 8px 24px rgb(43 29 22 / 0.08);
+    --shadow-lift: 0 14px 34px -12px rgb(43 29 22 / 0.28);
 
-    /* Control geometry shared by buttons, inputs and cards. */
-    --radius-control: 0.5rem;
-    --radius-card: 0.75rem;
-    --radius-panel: 1rem;
+    /* Shape scale: hero panel, card, image tile, control. */
+    --radius-panel: 2.5rem;
+    --radius-card: 1.75rem;
+    --radius-tile: 1.25rem;
+    --radius-control: 0.875rem;
 }
 
 @layer base {
+    html {
+        background-color: var(--warm-page);
+    }
+
+    body {
+        background-color: var(--warm-page);
+        color: var(--warm-ink);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+    }
+
+    h1 {
+        font-size: clamp(2.5rem, 5.5vw, 4rem);
+        line-height: 1.05;
+    }
+
+    h2 {
+        font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+        line-height: 1.12;
+    }
+
+    h3 {
+        font-size: 1.375rem;
+        line-height: 1.3;
+    }
+
     ::selection {
-        background-color: var(--color-primary-200);
-        color: var(--color-primary-900);
+        background-color: var(--warm-blush);
+        color: var(--warm-ink);
     }
 
     :focus-visible {
-        outline-color: var(--color-primary-500);
+        outline: 2px solid var(--warm-accent);
+        outline-offset: 2px;
+        border-radius: 2px;
     }
 }
 
@@ -54,6 +195,152 @@
     .viewer-canvas,
     .viewer-canvas canvas {
         touch-action: pan-y !important;
+    }
+
+    /* Pill buttons: primary (terracotta), secondary (ink), ghost (text link). */
+    .btn {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 999px;
+        padding: 0 1.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        transition:
+            background-color 160ms ease,
+            color 160ms ease,
+            border-color 160ms ease,
+            box-shadow 160ms ease,
+            transform 160ms ease;
+    }
+
+    .btn:disabled,
+    .btn[aria-disabled='true'] {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+
+    .btn-primary {
+        background-color: var(--warm-accent);
+        color: var(--warm-accent-foreground);
+        box-shadow: 0 6px 16px -8px rgb(43 29 22 / 0.45);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--warm-accent-hover);
+    }
+
+    .btn-secondary {
+        background-color: var(--warm-ink);
+        color: var(--warm-page);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background-color: color-mix(in srgb, var(--warm-ink) 88%, var(--warm-accent));
+    }
+
+    .btn-outline {
+        border: 1px solid var(--warm-hairline);
+        background-color: transparent;
+        color: var(--warm-ink);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+        border-color: var(--warm-accent);
+        color: var(--warm-accent);
+    }
+
+    .btn-ghost {
+        min-height: 2.75rem;
+        gap: 0.4rem;
+        padding: 0 0.25rem;
+        color: var(--warm-accent);
+        font-weight: 500;
+    }
+
+    .btn-ghost:hover {
+        color: var(--warm-accent-hover);
+    }
+
+    .btn-sm {
+        min-height: 2.5rem;
+        padding: 0 1.1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Form field base: 44px tall, hairline border, accent focus ring. */
+    .field {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--warm-hairline);
+        border-radius: var(--radius-control);
+        background-color: var(--warm-surface);
+        color: var(--warm-ink);
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        transition:
+            border-color 160ms ease,
+            box-shadow 160ms ease;
+    }
+
+    .field::placeholder {
+        color: var(--warm-muted);
+        opacity: 1;
+    }
+
+    .field:focus {
+        border-color: var(--warm-accent);
+        outline: 2px solid var(--warm-accent);
+        outline-offset: 2px;
+    }
+
+    /* Pills for stock and status labels. Text labels always accompany colour. */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }
+
+    .badge-success {
+        background-color: var(--warm-success-tint);
+        color: var(--warm-success);
+    }
+
+    .badge-warning {
+        background-color: var(--warm-warning-tint);
+        color: var(--warm-warning);
+    }
+
+    .badge-danger {
+        background-color: var(--warm-danger-tint);
+        color: var(--warm-danger);
+    }
+
+    .badge-accent {
+        background-color: var(--warm-accent);
+        color: var(--warm-accent-foreground);
+    }
+
+    .eyebrow {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--warm-accent);
     }
 }
 
@@ -166,7 +453,7 @@
         margin-bottom: var(--marquee-gap);
         overflow: hidden;
         border-radius: 1rem;
-        background-color: var(--color-primary-800);
+        background-color: var(--warm-panel);
         box-shadow: var(--shadow-lift);
         outline-offset: 3px;
     }

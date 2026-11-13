@@ -50,30 +50,32 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+    <footer className="border-t border-hairline bg-panel">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4" aria-label="Tumbler Shop Home">
-              <svg className="w-10 h-10 text-primary-600" fill="currentColor" viewBox="0 0 32 32">
-                <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z"/>
-              </svg>
-              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <Link href="/" className="mb-4 flex items-center gap-2.5" aria-label="Tumbler Shop Home">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                  <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z"/>
+                </svg>
+              </span>
+              <span className="font-display text-2xl font-semibold tracking-tight text-ink">
                 Tumbler Shop
               </span>
             </Link>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-xs">
+            <p className="mb-6 max-w-xs text-muted">
               Premium tumblers crafted for your daily adventures. Quality materials, sustainable design, and exceptional insulation.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-hairline text-muted transition-colors hover:border-accent hover:text-accent"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -84,7 +86,7 @@ export function Footer() {
 
           {/* Shop */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="mb-4 font-sans text-xs font-bold uppercase tracking-[0.16em] text-ink">
               Shop
             </h3>
             <ul className="space-y-3">
@@ -92,7 +94,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    className="text-sm text-muted transition-colors hover:text-accent"
                   >
                     {link.label}
                   </Link>
@@ -103,7 +105,7 @@ export function Footer() {
 
           {/* Support */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="mb-4 font-sans text-xs font-bold uppercase tracking-[0.16em] text-ink">
               Support
             </h3>
             <ul className="space-y-3">
@@ -111,7 +113,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    className="text-sm text-muted transition-colors hover:text-accent"
                   >
                     {link.label}
                   </Link>
@@ -122,7 +124,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-4">
+            <h3 className="mb-4 font-sans text-xs font-bold uppercase tracking-[0.16em] text-ink">
               Company
             </h3>
             <ul className="space-y-3">
@@ -130,7 +132,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    className="text-sm text-muted transition-colors hover:text-accent"
                   >
                     {link.label}
                   </Link>
@@ -141,17 +143,17 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-12 border-t border-hairline pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <p className="text-sm text-muted">
               © {currentYear} Tumbler Shop. All rights reserved.
             </p>
-            <div className="flex gap-6">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
               {footerLinks.legal.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  className="text-sm text-muted transition-colors hover:text-accent"
                 >
                   {link.label}
                 </Link>
