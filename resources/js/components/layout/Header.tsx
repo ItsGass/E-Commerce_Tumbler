@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useLogout } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Header() {
   const { user, isAuthenticated } = useAuthStore();
@@ -48,13 +49,13 @@ export function Header() {
       <nav className="container-page" aria-label="Main navigation">
         <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Tumbler Shop Home">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Tumbler Shop Home">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
                 <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z" />
               </svg>
             </span>
-            <span className="font-display text-xl font-semibold tracking-tight text-ink lg:text-2xl">
+            <span className="font-display text-xl font-semibold tracking-tight whitespace-nowrap text-ink lg:text-2xl">
               Tumbler Shop
             </span>
           </Link>
@@ -117,6 +118,10 @@ export function Header() {
                 </span>
               )}
             </button>
+
+            {/* Theme toggle: desktop only next to the cart; the mobile trigger
+                lives inside the hamburger menu below. */}
+            <ThemeToggle className="hidden lg:block" />
 
             {/* User Menu */}
             {isAuthenticated && user ? (
@@ -258,6 +263,10 @@ export function Header() {
                 Admin
               </Link>
             )}
+
+            <div className="mt-3 border-t border-hairline pt-3">
+              <ThemeToggle variant="row" />
+            </div>
 
             {isAuthenticated ? (
               <>
