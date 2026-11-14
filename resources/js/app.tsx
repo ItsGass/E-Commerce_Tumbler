@@ -1,4 +1,5 @@
 import { useAuthStore, type User } from '@/stores/useAuthStore';
+import { initializeTheme } from '@/stores/useThemeStore';
 import { PageShell, RootProviders } from '@/components/AppShell';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
@@ -19,6 +20,10 @@ createInertiaApp({
     color: '#B4492A',
   },
   setup({ el, App, props }) {
+    // The inline Blade script already painted the right theme; hydrate the
+    // store from the same source so components agree with the document.
+    initializeTheme();
+
     syncAuthFromPage(props.initialPage);
 
     router.on('success', (event) => {

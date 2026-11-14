@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Theme switching is attribute-driven (see the token blocks below), so the
+   `dark:` utilities must follow the resolved `data-theme` on <html> instead of
+   the media query. The inline pre-paint script sets the attribute to `light`
+   or `dark` before the first frame. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
@@ -42,38 +48,109 @@
     --warm-warning-tint: #fbe9c0;
     --warm-danger: #a32d2d;
     --warm-danger-tint: #f7dad5;
+
+    /* Dark palette values. They are mapped onto the semantic tokens by the
+       dark selectors below so every hex code is declared exactly once. */
+    --warm-dark-page: #1e1611;
+    --warm-dark-surface: #2a201a;
+    --warm-dark-panel: #33271f;
+    --warm-dark-blush: #5a3326;
+
+    --warm-dark-ink: #f6eadb;
+    --warm-dark-muted: #c4ae9d;
+
+    --warm-dark-accent: #e07a57;
+    --warm-dark-accent-hover: #f08f6d;
+    --warm-dark-accent-foreground: #2b1d16;
+
+    --warm-dark-hairline: #43352b;
+
+    --warm-dark-tint-1: #3a2b22;
+    --warm-dark-tint-2: #2e362b;
+    --warm-dark-tint-3: #352c3c;
+    --warm-dark-tint-4: #3a3324;
+    --warm-dark-tint-5: #26333b;
+
+    --warm-dark-success: #7fc9a5;
+    --warm-dark-success-tint: #23372c;
+    --warm-dark-warning: #f2c879;
+    --warm-dark-warning-tint: #3d3220;
+    --warm-dark-danger: #f09a8f;
+    --warm-dark-danger-tint: #3d2420;
 }
 
+/*
+ * Single source of truth for the theme: `data-theme` on <html> is always the
+ * resolved value (light or dark), set by the pre-paint script in the Blade
+ * root and kept in sync by the theme store.
+ */
+html[data-theme='dark'] {
+    color-scheme: dark;
+
+    --warm-page: var(--warm-dark-page);
+    --warm-surface: var(--warm-dark-surface);
+    --warm-panel: var(--warm-dark-panel);
+    --warm-blush: var(--warm-dark-blush);
+
+    --warm-ink: var(--warm-dark-ink);
+    --warm-muted: var(--warm-dark-muted);
+
+    --warm-accent: var(--warm-dark-accent);
+    --warm-accent-hover: var(--warm-dark-accent-hover);
+    --warm-accent-foreground: var(--warm-dark-accent-foreground);
+
+    --warm-hairline: var(--warm-dark-hairline);
+
+    --warm-tint-1: var(--warm-dark-tint-1);
+    --warm-tint-2: var(--warm-dark-tint-2);
+    --warm-tint-3: var(--warm-dark-tint-3);
+    --warm-tint-4: var(--warm-dark-tint-4);
+    --warm-tint-5: var(--warm-dark-tint-5);
+
+    --warm-success: var(--warm-dark-success);
+    --warm-success-tint: var(--warm-dark-success-tint);
+    --warm-warning: var(--warm-dark-warning);
+    --warm-warning-tint: var(--warm-dark-warning-tint);
+    --warm-danger: var(--warm-dark-danger);
+    --warm-danger-tint: var(--warm-dark-danger-tint);
+}
+
+/*
+ * "System" is resolved to light or dark in JavaScript before paint, so this
+ * media query is never the source of truth. It only keeps a document that
+ * still carries the unresolved `data-theme="system"` value (for example when
+ * the boot script did not run) following the OS.
+ */
 @media (prefers-color-scheme: dark) {
-    :root {
+    html[data-theme='system'] {
         color-scheme: dark;
 
-        --warm-page: #1e1611;
-        --warm-surface: #2a201a;
-        --warm-panel: #33271f;
-        --warm-blush: #5a3326;
+        --warm-page: var(--warm-dark-page);
+        --warm-surface: var(--warm-dark-surface);
+        --warm-panel: var(--warm-dark-panel);
+        --warm-blush: var(--warm-dark-blush);
 
-        --warm-ink: #f6eadb;
-        --warm-muted: #c4ae9d;
+        --warm-ink: var(--warm-dark-ink);
+        --warm-muted: var(--warm-dark-muted);
 
-        --warm-accent: #e07a57;
-        --warm-accent-hover: #f08f6d;
-        --warm-accent-foreground: #2b1d16;
+        --warm-accent: var(--warm-dark-accent);
+        --warm-accent-hover: var(--warm-dark-accent-hover);
+        --warm-accent-foreground: var(--warm-dark-accent-foreground);
 
-        --warm-hairline: #43352b;
+        --warm-hairline: var(--warm-dark-hairline);
 
-        --warm-tint-1: #3a2b22;
-        --warm-tint-2: #2e362b;
-        --warm-tint-3: #352c3c;
-        --warm-tint-4: #3a3324;
-        --warm-tint-5: #26333b;
+        --warm-tint-1: var(--warm-dark-tint-1);
+        --warm-tint-2: var(--warm-dark-tint-2);
+        --warm-tint-3: var(--warm-dark-tint-3);
+        --warm-tint-4: var(--warm-dark-tint-4);
+        --warm-tint-5: var(--warm-dark-tint-5);
 
-        --warm-success: #7fc9a5;
-        --warm-success-tint: #23372c;
-        --warm-warning: #f2c879;
-        --warm-warning-tint: #3d3220;
-        --warm-danger: #f09a8f;
-        --warm-danger-tint: #3d2420;
+        --warm-success: var(--warm-dark-success);
+        --warm-success-tint: var(--warm-dark-success-tint);
+        --warm-warning: var(--warm-dark-warning);
+        --warm-warning-tint: var(--warm-dark-warning-tint);
+        --warm-danger: var(--warm-dark-danger);
+        --warm-danger-tint: var(--warm-dark-danger-tint);
     }
 }
 
@@ -135,6 +212,22 @@
 @layer base {
     html {
         background-color: var(--warm-page);
+    }
+
+    /* Only the root surfaces animate on a theme swap; individual components
+       keep their own hover transitions. */
+    html,
+    body {
+        transition:
+            background-color 180ms ease,
+            color 180ms ease;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html,
+        body {
+            transition: none;
+        }
     }
 
     body {

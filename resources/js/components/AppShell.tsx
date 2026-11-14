@@ -1,14 +1,19 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import type { ResolvedComponent } from '@inertiajs/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Layout from '@/components/layout/Layout';
 import { queryClient } from '@/lib/queryClient';
+import { watchTheme } from '@/stores/useThemeStore';
 
 export function RootProviders({ children }: { children: ReactNode }) {
+  // OS changes only matter for the "System" preference; storage events keep
+  // multiple tabs on the same theme.
+  useEffect(() => watchTheme(), []);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
