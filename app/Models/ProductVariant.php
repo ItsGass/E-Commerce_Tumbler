@@ -43,11 +43,15 @@ class ProductVariant extends Model
 
     public function getTextureUrlAttribute(): ?string
     {
-        return $this->texture_path ? asset('storage/'.$this->texture_path) : null;
+        return $this->texture_path
+            ? '/storage/'.ltrim($this->texture_path, '/')
+            : null;
     }
 
     public function getGlbUrlAttribute(): ?string
     {
-        return $this->glb_path ? asset('storage/'.$this->glb_path) : null;
+        return $this->glb_path
+            ? '/storage/'.ltrim($this->glb_path, '/')
+            : null;
     }
 }

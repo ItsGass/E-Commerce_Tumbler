@@ -38,8 +38,12 @@ class ProductImage extends Model
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * Root-relative URL, so the image follows whatever host the page was
+     * opened on instead of baking in the request host (or `APP_URL`).
+     */
     public function getUrlAttribute(): string
     {
-        return asset('storage/'.$this->path);
+        return '/storage/'.ltrim($this->path, '/');
     }
 }

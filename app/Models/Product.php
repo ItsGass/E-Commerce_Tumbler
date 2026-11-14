@@ -71,6 +71,6 @@ class Product extends Model
 
     public function getGlbUrlAttribute(): ?string
     {
-        return $this->glb_path ? asset('storage/'.$this->glb_path) : null;
+        return $this->glb_path ? '/storage/'.ltrim($this->glb_path, '/') : null;
     }
 }
