@@ -55,7 +55,7 @@ export function Header() {
                 <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.5L25.5 9.5V22.5L16 29.5 6.5 22.5V9.5L16 4.5zM16 3.8L8.2 7.4v17.2L16 28.2l7.8-3.6V7.4L16 3.8z" />
               </svg>
             </span>
-            <span className="font-display text-xl font-semibold tracking-tight whitespace-nowrap text-ink lg:text-2xl">
+            <span className="font-display text-lg font-semibold tracking-tight whitespace-nowrap text-ink sm:text-xl lg:text-2xl">
               Tumbler Shop
             </span>
           </Link>
@@ -140,7 +140,7 @@ export function Header() {
                       {user.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </span>
-                  <svg className="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="hidden h-4 w-4 text-muted sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
