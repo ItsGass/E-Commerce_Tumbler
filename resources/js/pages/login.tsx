@@ -93,7 +93,7 @@ export default function Login() {
                 required
                 autoComplete="email"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.email ? 'border-danger' : 'border-hairline'
                 )}
               />
@@ -112,7 +112,7 @@ export default function Login() {
                 required
                 autoComplete="current-password"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.password ? 'border-danger' : 'border-hairline'
                 )}
               />

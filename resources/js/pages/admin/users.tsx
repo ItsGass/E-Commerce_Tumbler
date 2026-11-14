@@ -182,7 +182,7 @@ function AdminUsersContent() {
                   setPage(1);
                 }}
                 placeholder="Search by name, email..."
-                className="w-full px-4 py-2 pl-10 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-4 py-2 pl-10 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -194,7 +194,7 @@ function AdminUsersContent() {
                 setRoleFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+              className="px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="all">All Roles</option>
               <option value="user">User</option>
@@ -338,7 +338,7 @@ function AdminUsersContent() {
 
         {/* Create User Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay">
             <div className="bg-surface rounded-xl shadow-soft max-w-md w-full max-h-[90vh] overflow-y-auto">
               <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); createMutation.mutate(fd); }} className="p-6 space-y-4" id="create-user-form">
                 <div className="flex items-center justify-between">
@@ -351,23 +351,23 @@ function AdminUsersContent() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Name *</label>
-                    <input name="name" type="text" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="name" type="text" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Email *</label>
-                    <input name="email" type="email" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="email" type="email" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Password *</label>
-                    <input name="password" type="password" required minLength={8} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="password" type="password" required minLength={8} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Confirm Password *</label>
-                    <input name="password_confirmation" type="password" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="password_confirmation" type="password" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Role *</label>
-                    <select name="role" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent">
+                    <select name="role" required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent">
                       <option value="user">User</option>
                       <option value="admin">Admin</option>
                       <option value="super_admin">Super Admin</option>
@@ -375,24 +375,24 @@ function AdminUsersContent() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Phone</label>
-                    <input name="phone" type="tel" className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="phone" type="tel" className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Street</label>
-                    <input name="street" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="street" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">City</label>
-                      <input name="city" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="city" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">Province</label>
-                      <input name="province" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="province" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">Postal Code</label>
-                      <input name="postal_code" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="postal_code" type="text" className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                   </div>
                 </div>
@@ -412,7 +412,7 @@ function AdminUsersContent() {
 
         {/* Edit User Modal */}
         {editingUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay">
             <div className="bg-surface rounded-xl shadow-soft max-w-md w-full max-h-[90vh] overflow-y-auto">
               <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); fd.append('_method', 'PATCH'); updateMutation.mutate({ id: editingUser.id, data: fd }); }} className="p-6 space-y-4" id="edit-user-form">
                 <div className="flex items-center justify-between">
@@ -423,32 +423,32 @@ function AdminUsersContent() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Name *</label>
-                    <input name="name" type="text" defaultValue={editingUser.name} required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="name" type="text" defaultValue={editingUser.name} required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Email *</label>
-                    <input name="email" type="email" defaultValue={editingUser.email} required className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="email" type="email" defaultValue={editingUser.email} required className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Phone</label>
-                    <input name="phone" type="tel" defaultValue={editingUser.phone || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="phone" type="tel" defaultValue={editingUser.phone || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-ink mb-1">Street</label>
-                    <input name="street" type="text" defaultValue={editingUser.street || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                    <input name="street" type="text" defaultValue={editingUser.street || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">City</label>
-                      <input name="city" type="text" defaultValue={editingUser.city || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="city" type="text" defaultValue={editingUser.city || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">Province</label>
-                      <input name="province" type="text" defaultValue={editingUser.province || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="province" type="text" defaultValue={editingUser.province || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-ink mb-1">Postal Code</label>
-                      <input name="postal_code" type="text" defaultValue={editingUser.postal_code || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent" />
+                      <input name="postal_code" type="text" defaultValue={editingUser.postal_code || ''} className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent" />
                     </div>
                   </div>
                 </div>

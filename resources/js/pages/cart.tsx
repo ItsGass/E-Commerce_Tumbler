@@ -162,7 +162,7 @@ export default function Cart() {
         </div>
 
         {showCheckout && !user && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay">
             <div className="bg-surface rounded-xl shadow-soft max-w-md w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-ink mb-4">
@@ -181,7 +181,7 @@ export default function Cart() {
                       value={buyerData.name}
                       onChange={(e) => setBuyerData({...buyerData, name: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -193,7 +193,7 @@ export default function Cart() {
                       value={buyerData.email}
                       onChange={(e) => setBuyerData({...buyerData, email: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -205,7 +205,7 @@ export default function Cart() {
                       value={buyerData.phone}
                       onChange={(e) => setBuyerData({...buyerData, phone: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -217,7 +217,7 @@ export default function Cart() {
                       value={buyerData.street}
                       onChange={(e) => setBuyerData({...buyerData, street: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -230,7 +230,7 @@ export default function Cart() {
                         value={buyerData.city}
                         onChange={(e) => setBuyerData({...buyerData, city: e.target.value})}
                         required
-                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                       />
                     </div>
                     <div>
@@ -242,7 +242,7 @@ export default function Cart() {
                         value={buyerData.province}
                         onChange={(e) => setBuyerData({...buyerData, province: e.target.value})}
                         required
-                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                       />
                     </div>
                   </div>
@@ -255,7 +255,7 @@ export default function Cart() {
                       value={buyerData.postal_code}
                       onChange={(e) => setBuyerData({...buyerData, postal_code: e.target.value})}
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div className="flex gap-3 pt-4">

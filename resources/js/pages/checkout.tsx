@@ -362,7 +362,7 @@ export default function Checkout() {
                         onChange={(e) => setBuyerData({...buyerData, name: e.target.value})}
                         required
                         className={cn(
-                          'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                          'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                           errors.name ? 'border-danger' : 'border-hairline'
                         )}
                       />
@@ -378,7 +378,7 @@ export default function Checkout() {
                         onChange={(e) => setBuyerData({...buyerData, email: e.target.value})}
                         required
                         className={cn(
-                          'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                          'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                           errors.email ? 'border-danger' : 'border-hairline'
                         )}
                       />
@@ -395,7 +395,7 @@ export default function Checkout() {
                       onChange={(e) => setBuyerData({...buyerData, phone: e.target.value})}
                       required
                       className={cn(
-                        'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                        'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                         errors.phone ? 'border-danger' : 'border-hairline'
                       )}
                     />
@@ -419,7 +419,7 @@ export default function Checkout() {
                       onChange={(e) => setBuyerData({...buyerData, street: e.target.value})}
                       required
                       className={cn(
-                        'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                        'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                         errors.street ? 'border-danger' : 'border-hairline'
                       )}
                     />
@@ -436,7 +436,7 @@ export default function Checkout() {
                         onChange={(e) => setBuyerData({...buyerData, city: e.target.value})}
                         required
                         className={cn(
-                          'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                          'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                           errors.city ? 'border-danger' : 'border-hairline'
                         )}
                       />
@@ -452,7 +452,7 @@ export default function Checkout() {
                         onChange={(e) => setBuyerData({...buyerData, province: e.target.value})}
                         required
                         className={cn(
-                          'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                          'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                           errors.province ? 'border-danger' : 'border-hairline'
                         )}
                       />
@@ -468,7 +468,7 @@ export default function Checkout() {
                         onChange={(e) => setBuyerData({...buyerData, postal_code: e.target.value})}
                         required
                         className={cn(
-                          'w-full px-4 py-2 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                          'w-full px-4 py-2 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                           errors.postal_code ? 'border-danger' : 'border-hairline'
                         )}
                       />

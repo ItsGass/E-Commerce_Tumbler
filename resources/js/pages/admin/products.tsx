@@ -223,7 +223,7 @@ function AdminProductsContent() {
                 setPage(1);
               }}
               placeholder="Search products..."
-              className="w-full px-4 py-2 pl-10 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full px-4 py-2 pl-10 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
             />
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -383,7 +383,7 @@ function AdminProductsContent() {
 
         {/* Create Product Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay">
             <div className="bg-surface rounded-xl shadow-soft max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <form onSubmit={handleSubmit} className="p-6 space-y-6" id="create-product-form">
                 <div className="flex items-center justify-between">
@@ -410,7 +410,7 @@ function AdminProductsContent() {
                       name="name"
                       type="text"
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -421,7 +421,7 @@ function AdminProductsContent() {
                       name="slug"
                       type="text"
                       required
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
@@ -433,7 +433,7 @@ function AdminProductsContent() {
                   <textarea
                     name="description"
                     rows={3}
-                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
 
@@ -447,7 +447,7 @@ function AdminProductsContent() {
                       type="number"
                       required
                       min="0"
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -459,7 +459,7 @@ function AdminProductsContent() {
                       type="number"
                       required
                       min="0"
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
@@ -472,7 +472,7 @@ function AdminProductsContent() {
                     name="image"
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   <p className="mt-1 text-xs text-muted">
                     JPG, PNG or WebP. Max 5MB. Uploaded as the product thumbnail.
@@ -487,7 +487,7 @@ function AdminProductsContent() {
                     name="glb"
                     type="file"
                     accept=".glb"
-                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   <p className="mt-1 text-xs text-muted">
                     Max 10MB. Model/Gltf-binary format only.
@@ -517,7 +517,7 @@ function AdminProductsContent() {
 
         {/* Edit Product Modal */}
         {editingProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay">
             <div className="bg-surface rounded-xl shadow-soft max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <form onSubmit={handleEditSubmit} className="p-6 space-y-6" id="edit-product-form">
                 <div className="flex items-center justify-between">
@@ -545,7 +545,7 @@ function AdminProductsContent() {
                       type="text"
                       required
                       defaultValue={editingProduct.name}
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -557,7 +557,7 @@ function AdminProductsContent() {
                       type="text"
                       required
                       defaultValue={editingProduct.slug}
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
@@ -570,7 +570,7 @@ function AdminProductsContent() {
                     name="description"
                     rows={3}
                     defaultValue={editingProduct.description ?? ''}
-                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
 
@@ -585,7 +585,7 @@ function AdminProductsContent() {
                       required
                       min="0"
                       defaultValue={editingProduct.price}
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                   <div>
@@ -598,7 +598,7 @@ function AdminProductsContent() {
                       required
                       min="0"
                       defaultValue={editingProduct.stock}
-                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
@@ -662,7 +662,7 @@ function AdminProductsContent() {
                             uploadImageMutation.mutate({ id: editingProduct.id, file });
                           }
                         }}
-                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                       />
                       {uploadImageMutation.isPending && (
                         <p className="mt-1 text-xs text-muted">Uploading...</p>
@@ -682,7 +682,7 @@ function AdminProductsContent() {
                             uploadGlbMutation.mutate({ id: editingProduct.id, file });
                           }
                         }}
-                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                        className="w-full px-4 py-2 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                       />
                       {uploadGlbMutation.isPending && (
                         <p className="mt-1 text-xs text-muted">Uploading...</p>

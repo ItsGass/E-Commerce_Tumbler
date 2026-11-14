@@ -97,7 +97,7 @@ export default function Track() {
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
                   placeholder="TS-ABCD1234"
                   required
-                  className="w-full px-4 py-3 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent text-lg"
+                  className="w-full px-4 py-3 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent text-lg"
                 />
               </div>
 
@@ -111,7 +111,7 @@ export default function Track() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email address"
-                    className="w-full min-w-0 flex-1 px-4 py-3 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full min-w-0 flex-1 px-4 py-3 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   <span className="text-center text-sm text-muted sm:text-base">or</span>
                   <input
@@ -119,7 +119,7 @@ export default function Track() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Phone number"
-                    className="w-full min-w-0 flex-1 px-4 py-3 border border-hairline rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full min-w-0 flex-1 px-4 py-3 border border-hairline rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <p className="mt-1 text-sm text-muted">

@@ -105,7 +105,7 @@ export default function Register() {
                 required
                 autoComplete="name"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.name ? 'border-danger' : 'border-hairline'
                 )}
               />
@@ -124,7 +124,7 @@ export default function Register() {
                 required
                 autoComplete="email"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.email ? 'border-danger' : 'border-hairline'
                 )}
               />
@@ -143,7 +143,7 @@ export default function Register() {
                 required
                 autoComplete="new-password"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.password ? 'border-danger' : 'border-hairline'
                 )}
               />
@@ -182,7 +182,7 @@ export default function Register() {
                 required
                 autoComplete="new-password"
                 className={cn(
-                  'w-full px-4 py-3 border rounded-lg bg-panel focus:outline-none focus:ring-2 focus:ring-accent',
+                  'w-full px-4 py-3 border rounded-lg bg-surface focus:outline-none focus:ring-2 focus:ring-accent',
                   errors.password_confirmation ? 'border-danger' : 'border-hairline'
                 )}
               />

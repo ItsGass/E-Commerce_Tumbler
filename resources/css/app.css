@@ -36,6 +36,9 @@
 
     --warm-hairline: #e8d8c3;
 
+    /* Warm ink scrim for modal backdrops: readable in both themes. */
+    --warm-overlay: rgb(43 29 22 / 0.45);
+
     --warm-tint-1: #f3e3ce;
     --warm-tint-2: #dce6d8;
     --warm-tint-3: #e8ddf0;
@@ -165,6 +168,7 @@ html[data-theme='dark'] {
     --color-accent-hover: var(--warm-accent-hover);
     --color-accent-foreground: var(--warm-accent-foreground);
     --color-hairline: var(--warm-hairline);
+    --color-overlay: var(--warm-overlay);
 
     --color-tint-1: var(--warm-tint-1);
     --color-tint-2: var(--warm-tint-2);
