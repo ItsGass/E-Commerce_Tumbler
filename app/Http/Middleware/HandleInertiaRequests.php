@@ -44,6 +44,11 @@ class HandleInertiaRequests extends Middleware
                     ? UserResource::make($request->user())->resolve()
                     : null,
             ],
+            // One-request flash values. `contact_sent` powers the demo contact
+            // confirmation; nothing is persisted or mailed.
+            'flash' => [
+                'contact_sent' => fn () => $request->session()->get('contact_sent'),
+            ],
         ];
     }
 }

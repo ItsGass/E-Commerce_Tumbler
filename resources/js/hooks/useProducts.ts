@@ -72,7 +72,12 @@ export const productKeys = {
 };
 
 // Get products list
-export function useProducts(params?: { page?: number; per_page?: number; search?: string }) {
+export function useProducts(params?: {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  sort?: 'new' | 'popular';
+}) {
   return useQuery({
     queryKey: productKeys.list(params || {}),
     queryFn: async () => {

@@ -1,30 +1,59 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useProducts } from '@/hooks/useProducts';
 import { addProductToCart } from '@/hooks/useCart';
 import { ProductCard } from '@/components/product';
 import { cn } from '@/lib/utils';
 
+type ProductSort = 'new' | 'popular';
+
 export default function Products() {
   const [search, setSearch] = useState('');
-  const { data, isLoading, isFetching } = useProducts({ search });
+  const { url } = usePage();
+
+  // The URL is the source of truth, so /products?sort=popular can be linked
+  // directly and the dropdown always agrees with the request.
+  const sort: ProductSort = useMemo(() => {
+    const query = url.split('?')[1] ?? '';
+    return new URLSearchParams(query).get('sort') === 'popular' ? 'popular' : 'new';
+  }, [url]);
+
+  const { data, isLoading, isFetching } = useProducts({ search, sort });
+
+  const handleSortChange = (value: ProductSort) => {
+    router.get(
+      '/products',
+      { sort: value },
+      { preserveState: true, preserveScroll: true, replace: true }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-page py-10 lg:py-14">
+      <Head title="All Products">
+        <meta
+          name="description"
+          content="Browse the Tumbler Shop demo catalog. Every order is a sample and no real payment is taken."
+        />
+      </Head>
+
       <div className="container-page">
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-ink mb-2">
             All Products
           </h1>
           <p className="text-muted">
-            Discover our collection of premium tumblers
+            {sort === 'popular'
+              ? 'The demo products with the most units sold'
+              : 'Discover our collection of premium tumblers'}
           </p>
         </div>
 
-        {/* Search */}
-        <div className="mb-8">
-          <div className="relative max-w-md">
+        {/* Search and sort */}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative max-w-md w-full">
             <input
               type="text"
               value={search}
@@ -45,6 +74,21 @@ export default function Products() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3">
+            <label htmlFor="product-sort" className="text-sm font-medium text-muted">
+              Sort by
+            </label>
+            <select
+              id="product-sort"
+              value={sort}
+              onChange={(e) => handleSortChange(e.target.value as ProductSort)}
+              className="field min-h-11 w-44 cursor-pointer"
+            >
+              <option value="new">Newest</option>
+              <option value="popular">Best selling</option>
+            </select>
           </div>
         </div>
 

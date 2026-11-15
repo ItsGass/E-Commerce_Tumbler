@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +17,20 @@ Route::inertia('/register', 'register')->name('register');
 Route::inertia('/profile', 'profile')->name('profile');
 Route::inertia('/orders', 'orders')->name('orders');
 
+// Static storefront pages. The copy is demo content; see README.
+Route::inertia('/shipping', 'info/shipping')->name('info.shipping');
+Route::inertia('/returns', 'info/returns')->name('info.returns');
+Route::inertia('/contact', 'info/contact')->name('info.contact');
+Route::post('/contact', ContactController::class)->name('contact.store');
+Route::inertia('/about', 'info/about')->name('info.about');
+Route::inertia('/sustainability', 'info/sustainability')->name('info.sustainability');
+Route::inertia('/careers', 'info/careers')->name('info.careers');
+Route::inertia('/press', 'info/press')->name('info.press');
+Route::inertia('/gift-cards', 'info/gift-cards')->name('info.gift-cards');
+Route::inertia('/privacy', 'info/privacy')->name('info.privacy');
+Route::inertia('/terms', 'info/terms')->name('info.terms');
+Route::inertia('/cookies', 'info/cookies')->name('info.cookies');
+
 // Admin routes
 Route::middleware(['auth', 'role:admin,super_admin'])->group(function () {
     Route::inertia('/admin', 'admin/dashboard')->name('admin.dashboard');
@@ -28,11 +43,10 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::inertia('/admin/users', 'admin/users')->name('admin.users.index');
 });
 
-// Fallback for SPA routing (optional, for direct URL access).
-//
-// `/api/*` is deliberately excluded: API paths must answer with JSON (or a
-// JSON 404 from routes/api.php), never with the SPA shell. The requirement is
-// matched after the leading slash, so it must not contain `^` or `$` anchors.
-Route::get('/{any}', function () {
-    return Inertia::render('home');
-})->where('any', '(?!(?:api)(?:/|$)).*');
+// Unknown paths get a real 404 page. `/api/*` is deliberately absent here:
+// routes/api.php answers those with JSON, including its own 404 fallback.
+Route::fallback(function () {
+    return Inertia::render('errors/404')
+        ->toResponse(request())
+        ->setStatusCode(404);
+});
