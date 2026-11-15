@@ -1,5 +1,7 @@
 <?php
 
+use Inertia\Testing\AssertableInertia as Assert;
+
 test('unknown api path answers with a json 404 instead of the spa shell', function () {
     $response = $this->getJson('/api/does-not-exist');
 
@@ -23,9 +25,10 @@ test('the api prefix itself answers with a json 404', function () {
     $response->assertExactJson(['message' => 'Not found']);
 });
 
-test('unknown spa paths still render the app shell', function () {
+test('unknown spa paths answer with the 404 page instead of the home shell', function () {
     $response = $this->get('/totally-unknown-spa-path');
 
-    $response->assertOk();
+    $response->assertNotFound();
     $response->assertHeader('content-type', 'text/html; charset=UTF-8');
+    $response->assertInertia(fn (Assert $page) => $page->component('errors/404'));
 });
