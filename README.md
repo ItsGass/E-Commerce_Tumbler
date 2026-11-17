@@ -201,6 +201,42 @@ This repository seeds a demo catalogue, demo photos, and static sample
 testimonials. None of it is real customer data, real payment data, or real
 shipping data.
 
+### Info pages
+
+Eleven static info pages live in `resources/js/pages/info/` and are served by
+`Route::inertia` routes in `routes/web.php`:
+
+| Path | Inertia component |
+| --- | --- |
+| `/shipping` | `info/shipping` |
+| `/returns` | `info/returns` |
+| `/contact` | `info/contact` |
+| `/about` | `info/about` |
+| `/sustainability` | `info/sustainability` |
+| `/careers` | `info/careers` |
+| `/press` | `info/press` |
+| `/gift-cards` | `info/gift-cards` |
+| `/privacy` | `info/privacy` |
+| `/terms` | `info/terms` |
+| `/cookies` | `info/cookies` |
+
+All eleven are **static demo content**: the policies, addresses, job listings
+and press details are placeholders, not real company or customer information,
+and every page carries the "Sample content — demo only" note.
+
+Two things are intentionally not implemented:
+
+- **Gift cards.** `/gift-cards` explains that no codes, balances or purchase
+  flow exist, and checkout has no gift-card field.
+- **Real contact sending.** `/contact` validates the name, email and message on
+  the server (`ContactController`) and then flashes a demo confirmation.
+  Nothing is emailed, queued or stored, and the published contact details are
+  placeholders.
+
+Unknown storefront paths no longer fall through to the SPA shell. The
+`Route::fallback` at the end of `routes/web.php` renders the Inertia
+`errors/404` page with a `404` status; `/api/*` keeps its JSON 404.
+
 ### Seeding the demo
 
 The full demo reset copies the committed optimized photos together with the
