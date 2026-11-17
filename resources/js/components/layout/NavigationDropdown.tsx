@@ -235,39 +235,47 @@ export function NavigationDropdown({
             </button>
 
             {isOpen && (
-                <div
-                    id={menuId}
-                    role="menu"
-                    aria-label={group.label}
-                    className="absolute top-full left-1/2 z-50 mt-3 w-60 -translate-x-1/2 rounded-[20px] border border-hairline bg-surface p-2 shadow-soft"
-                >
-                    {group.links.map((link, index) => {
-                        const active = isNavigationLinkActive(link.href, url);
+                <div className="absolute top-full left-1/2 z-50 w-60 -translate-x-1/2 pt-3">
+                    {/* The padding above the card is a transparent hover bridge:
+              it keeps the pointer inside the wrapper while it travels from the
+              trigger to the menu, so hover-opened menus stay open. */}
+                    <div
+                        id={menuId}
+                        role="menu"
+                        aria-label={group.label}
+                        className="rounded-[20px] border border-hairline bg-surface p-2 shadow-soft"
+                    >
+                        {group.links.map((link, index) => {
+                            const active = isNavigationLinkActive(
+                                link.href,
+                                url,
+                            );
 
-                        return (
-                            <Link
-                                key={link.href}
-                                ref={(element) => {
-                                    itemRefs.current[index] =
-                                        element as HTMLAnchorElement | null;
-                                }}
-                                href={link.href}
-                                role="menuitem"
-                                tabIndex={-1}
-                                aria-current={active ? 'page' : undefined}
-                                onClick={() => close()}
-                                className={cn(
-                                    'flex min-h-10 items-center rounded-xl px-3 py-2 text-sm transition-colors',
-                                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent',
-                                    active
-                                        ? 'bg-panel font-medium text-accent'
-                                        : 'text-ink hover:bg-panel',
-                                )}
-                            >
-                                {link.label}
-                            </Link>
-                        );
-                    })}
+                            return (
+                                <Link
+                                    key={link.href}
+                                    ref={(element) => {
+                                        itemRefs.current[index] =
+                                            element as HTMLAnchorElement | null;
+                                    }}
+                                    href={link.href}
+                                    role="menuitem"
+                                    tabIndex={-1}
+                                    aria-current={active ? 'page' : undefined}
+                                    onClick={() => close()}
+                                    className={cn(
+                                        'flex min-h-10 items-center rounded-xl px-3 py-2 text-sm transition-colors',
+                                        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent',
+                                        active
+                                            ? 'bg-panel font-medium text-accent'
+                                            : 'text-ink hover:bg-panel',
+                                    )}
+                                >
+                                    {link.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>
